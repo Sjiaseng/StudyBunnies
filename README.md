@@ -1,6 +1,6 @@
 # studybunnies
 
-A new Flutter project.
+MAE Flutter Project
 
 ## Getting Started
 
