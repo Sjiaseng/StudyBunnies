@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'package:studybunnies/adminscreens/myprofile.dart';
-import 'package:studybunnies/adminscreens/notification.dart';
+import 'package:studybunnies/adminscreens/logout.dart';
 
 AppBar mainappbar(String title, String helpmsg, BuildContext context) {
   return AppBar(
@@ -30,22 +30,6 @@ AppBar mainappbar(String title, String helpmsg, BuildContext context) {
     actions: [
       IconButton(
         icon: Icon(
-          Icons.notifications,
-          size: 3.0.h, 
-          color: const Color.fromRGBO(239, 238, 233, 1),
-        ),
-        onPressed: () {
-          Navigator.push(
-            context, PageTransition(
-              type: PageTransitionType.topToBottom,
-              duration: const Duration(milliseconds: 305),  
-              child: const Notificationpage()
-            )    
-          );  
-        },
-      ),
-      IconButton(
-        icon: Icon(
           Icons.person_pin,
           size: 3.0.h, 
           color: const Color.fromRGBO(239, 238, 233, 1),
@@ -56,6 +40,22 @@ AppBar mainappbar(String title, String helpmsg, BuildContext context) {
               type: PageTransitionType.topToBottom,
               duration: const Duration(milliseconds: 305),  
               child: const MyProfile()
+            )    
+          );  
+        },
+      ),
+      IconButton(
+        icon: Icon(
+          Icons.logout,
+          size: 3.0.h, 
+          color: const Color.fromRGBO(239, 238, 233, 1),
+        ),
+        onPressed: () {
+          Navigator.push(
+            context, PageTransition(
+              type: PageTransitionType.topToBottom,
+              duration: const Duration(milliseconds: 305),  
+              child: const Notificationpage()
             )    
           );  
         },
@@ -91,22 +91,6 @@ AppBar subappbar(String title, BuildContext context) {
     actions: [
       IconButton(
         icon: Icon(
-          Icons.notifications,
-          size: 3.0.h, 
-          color: const Color.fromRGBO(239, 238, 233, 1),
-        ),
-        onPressed: () {
-          Navigator.push(
-            context, PageTransition(
-              type: PageTransitionType.topToBottom,
-              duration: const Duration(milliseconds: 305),  
-              child: const Notificationpage()
-            )    
-          );  
-        },
-      ),
-      IconButton(
-        icon: Icon(
           Icons.person_pin,
           size: 3.0.h, 
           color: const Color.fromRGBO(239, 238, 233, 1),
@@ -117,6 +101,23 @@ AppBar subappbar(String title, BuildContext context) {
               type: PageTransitionType.topToBottom,
               duration: const Duration(milliseconds: 305),  
               child: const MyProfile()
+            )    
+          );  
+        },
+      ),
+
+      IconButton(
+        icon: Icon(
+          Icons.logout,
+          size: 3.0.h, 
+          color: const Color.fromRGBO(239, 238, 233, 1),
+        ),
+        onPressed: () {
+          Navigator.push(
+            context, PageTransition(
+              type: PageTransitionType.topToBottom,
+              duration: const Duration(milliseconds: 305),  
+              child: const Notificationpage()
             )    
           );  
         },

@@ -16,7 +16,6 @@ void main(){
     statusBarColor: Colors.black, 
     statusBarBrightness: Brightness.dark, 
   ));
-
   runApp(const MyApp());
 }
 
