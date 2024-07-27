@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/editgift.dart';
 
 
 Widget buildGiftsGridView() {
@@ -101,20 +103,30 @@ Widget buildGiftsGridView() {
                         ),
                       ),
                       SizedBox(width: 2.w),
-                      Container(
-                        width: 10.w,
-                        height: 5.h,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          border: Border.all(color: Colors.black, width: 1.0),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                          size: 15.sp,
-                        ),
-                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context, PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                              duration: const Duration(milliseconds: 305),  
+                              child: const Editgift(),  
+                            ),);                       
+                        },
+                        child: Container(
+                            width: 10.w,
+                            height: 5.h,
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              border: Border.all(color: Colors.black, width: 1.0),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 15.sp,
+                            ),
+                          ),
+                          ),
                     ],
                   ),
                 ),
