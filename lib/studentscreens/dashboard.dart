@@ -13,12 +13,6 @@ class StudentDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    print("StudentDashboard build method called");
-
- // Debug print to ensure widget is being built
-    print("Building StudentDashboard widget");
-
     // Setting the system UI overlay style (status bar color and brightness)
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.black, // Set status bar color to black
