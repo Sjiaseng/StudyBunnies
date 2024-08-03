@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'package:studybunnies/adminscreens/classes.dart';
 import 'package:studybunnies/adminscreens/users.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/subfeedback.dart';
 import 'package:studybunnies/adminwidgets/appbar.dart';
 import 'package:studybunnies/adminwidgets/bottomnav.dart';
 import 'package:studybunnies/adminwidgets/drawer.dart';
@@ -120,9 +123,9 @@ class AdminDashboard extends StatelessWidget {
                 padding: EdgeInsets.only(left: 3.w, right: 2.w),
                 child: Row(
                   children: [
-                    SummaryContainer('Total Students', Colors.amber, '100'),
+                    SummaryContainer('Total Students', const Color.fromRGBO(217, 217, 217, 1), '100'),
                     SizedBox(width: 5.w),
-                    SummaryContainer('Total Teachers', Colors.blue, '50'),
+                    SummaryContainer('Total Teachers', const Color.fromRGBO(217, 217, 217, 1), '50'),
                   ],
                 ),
               ),
@@ -133,9 +136,9 @@ class AdminDashboard extends StatelessWidget {
                 padding: EdgeInsets.only(left: 3.w, right: 2.w),
                 child: Row(
                   children: [
-                    SummaryContainer('Total Admins', Colors.green, '10'),
+                    SummaryContainer('Total Admins', const Color.fromRGBO(217, 217, 217, 1), '10'),
                     SizedBox(width: 5.w),
-                    SummaryContainer('Total Classes', Colors.orange, '20'),
+                    SummaryContainer('Total Classes', const Color.fromRGBO(217, 217, 217, 1), '20'),
                   ],
                 ),
               ),
@@ -169,9 +172,17 @@ class AdminDashboard extends StatelessWidget {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(3.w),
                           highlightColor: Colors.grey,
-                          onTap: () {
-                            print('Tapped on Feedback');
-                          },
+                          onTap: (){
+                          Timer(const Duration(milliseconds: 205), () {
+                            Navigator.push(
+                              context, PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                duration: const Duration(milliseconds: 305),  
+                                child: const Subfeedback(),
+                              )
+                            );    
+                          });
+                          }, 
                           child: Container(
                             height: 15.h,
                             decoration: BoxDecoration(

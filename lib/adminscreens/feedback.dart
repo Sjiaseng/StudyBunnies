@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/subfeedback.dart';
 import 'package:studybunnies/adminwidgets/appbar.dart';
 import 'package:studybunnies/adminwidgets/bottomnav.dart';
 import 'package:studybunnies/adminwidgets/drawer.dart';
@@ -114,9 +118,17 @@ class _FeedbacklistState extends State<Feedbacklist> {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(3.w),
                         highlightColor: Colors.grey,
-                        onTap: () {
-                          print('Tapped on Feedback');
-                        },
+                        onTap: (){
+                        Timer(const Duration(milliseconds: 205), () {
+                          Navigator.push(
+                            context, PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              duration: const Duration(milliseconds: 305),  
+                              child: const Subfeedback(),
+                            )
+                          );    
+                        });
+                        }, 
                         child: Container(
                           height: 17.h,
                           decoration: BoxDecoration(

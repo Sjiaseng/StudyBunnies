@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/addclass.dart';
 import 'package:studybunnies/adminscreens/dashboard.dart';
 import 'package:studybunnies/adminscreens/giftcatalogue.dart';
 import 'package:studybunnies/adminwidgets/appbar.dart';
@@ -227,15 +228,24 @@ class _ClasslistState extends State<Classlist> {
                   },
                 ),
               ),
-                        
-
-              
-
-
-
             ],
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+        onPressed: () {
+        Navigator.push(
+          context, PageTransition(
+          type: PageTransitionType.rightToLeft,
+            duration: const Duration(milliseconds: 305),  
+            child: const Addclass(),
+          ),
+        ); 
+          // Add your action here
+        },
+        backgroundColor: const Color.fromARGB(255, 100, 30, 30), 
+        shape: const CircleBorder(), 
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
       ),
     );
   }

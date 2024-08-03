@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/addtimetable.dart';
 import 'package:studybunnies/adminscreens/giftcatalogue.dart';
 import 'package:studybunnies/adminscreens/users.dart';
 import 'package:studybunnies/adminwidgets/appbar.dart';
@@ -141,19 +142,19 @@ class _TimetablelistState extends State<Timetablelist> {
                         ),
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Timetablecontent("Course Title", "Mohammad Ali", "Venue", "2:30", "3:20"),
+                          child: Timetablecontent(context,"Course Title", "Mohammad Ali", "Venue", "2:30", "3:20"),
                         ),
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Timetablecontent("Course Title", "Mohammad Ali", "Venue", "2:30", "3:20"),
+                          child: Timetablecontent(context, "Course Title", "Mohammad Ali", "Venue", "2:30", "3:20"),
                         ),
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Timetablecontent("Course Title", "Mohammad Ali", "Venue", "2:30", "3:20"),
+                          child: Timetablecontent(context, "Course Title", "Mohammad Ali", "Venue", "2:30", "3:20"),
                         ),
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Timetablecontent("Course Title", "Mohammad Ali", "Venue", "2:30", "3:20"),
+                          child: Timetablecontent(context, "Course Title", "Mohammad Ali", "Venue", "2:30", "3:20"),
                         ),
                       ],
                     ),
@@ -163,6 +164,21 @@ class _TimetablelistState extends State<Timetablelist> {
             ],
           ),
         ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+        Navigator.push(
+          context, PageTransition(
+          type: PageTransitionType.rightToLeft,
+            duration: const Duration(milliseconds: 305),  
+            child: const Addtimetable(),
+          ),
+        ); 
+          // Add your action here
+        },
+        backgroundColor: const Color.fromARGB(255, 100, 30, 30), 
+        shape: const CircleBorder(), 
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
       ),
     );
   }

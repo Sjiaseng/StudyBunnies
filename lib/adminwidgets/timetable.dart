@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/edittimetable.dart';
 
 Widget Timetableheader(String mydate) {
   return Container(
@@ -29,8 +31,18 @@ Widget Timetableheader(String mydate) {
   );
 }
 
-Widget Timetablecontent(String course_title, String lecturername, String venue, String timestart, String timeend) {
-  return InkWell(
+Widget Timetablecontent(BuildContext context,String course_title, String lecturername, String venue, String timestart, String timeend) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context, PageTransition(
+          type: PageTransitionType.rightToLeft,
+          duration: const Duration(milliseconds: 305),  
+          child: const Edittimetable(),
+        )
+      ); 
+    },
+    child:InkWell(
     highlightColor: Colors.grey,
     borderRadius: BorderRadius.circular(8.0),
     focusColor: Colors.grey,
@@ -115,11 +127,21 @@ Widget Timetablecontent(String course_title, String lecturername, String venue, 
             ],
           ),
 
-
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+            Text("Modify Timetable", style: TextStyle(
+              color: Colors.grey,
+              fontSize: 9.sp,
+            ),
+            ),
+            Icon(Icons.arrow_right, color: Colors.grey, size: 14.sp),
+          ],)
 
           ],
         ),
       ),
+    ),
     ),
   );
 }

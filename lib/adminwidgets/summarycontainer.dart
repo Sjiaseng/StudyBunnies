@@ -18,7 +18,7 @@ Widget SummaryContainer(String title, Color color, String value) {
                 title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.black,
                   fontSize: 12.sp,
                 ),
               ),
@@ -26,7 +26,7 @@ Widget SummaryContainer(String title, Color color, String value) {
               Text(
                 value,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontSize: 12.sp,
                 ),
               ),

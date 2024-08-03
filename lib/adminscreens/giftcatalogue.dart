@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/addgift.dart';
 import 'package:studybunnies/adminscreens/classes.dart';
 import 'package:studybunnies/adminscreens/timetable.dart';
 import 'package:studybunnies/adminwidgets/appbar.dart';
@@ -70,7 +71,7 @@ class _GiftlistState extends State<Giftlist> {
                 selectedBorderColor: Colors.transparent,
                 onPressed: (index) {
                   setState(() {
-                    selectedIndex = index; // Update the selected index
+                    selectedIndex = index; 
                   });
                 },
                 selectedColor: Colors.black,
@@ -122,6 +123,21 @@ class _GiftlistState extends State<Giftlist> {
             ],
           ),
         ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+        Navigator.push(
+          context, PageTransition(
+          type: PageTransitionType.rightToLeft,
+            duration: const Duration(milliseconds: 305),  
+            child: const Addgift(),
+          ),
+        ); 
+          // Add your action here
+        },
+        backgroundColor: const Color.fromARGB(255, 100, 30, 30), 
+        shape: const CircleBorder(), 
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
       ),
     );
   }

@@ -1,21 +1,23 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:studybunnies/adminscreens/adminsubpage/resetpassword.dart';
 
-class MyProfile extends StatefulWidget {
-  const MyProfile({super.key});
+
+class Adduser extends StatefulWidget {
+  const Adduser({super.key});
 
   @override
-  State<MyProfile> createState() => _MyProfileState();
+  State<Adduser> createState() => _AdduserState();
 }
 
-class _MyProfileState extends State<MyProfile> {
+class _AdduserState extends State<Adduser> {
   final ImagePicker _picker = ImagePicker();
   String? _pickedImagePath;
   String? _selectedCountry;
   String? _selectedRole;
+
+  bool _obscurePassword = true;
 
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -25,6 +27,12 @@ class _MyProfileState extends State<MyProfile> {
       });
       print('Picked image path: ${pickedFile.path}');
     }
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscurePassword = !_obscurePassword;
+    });
   }
 
   @override
@@ -54,7 +62,7 @@ class _MyProfileState extends State<MyProfile> {
                     child: Padding(
                       padding: EdgeInsets.only(top: 3.h, right: 8.w),
                       child: Text(
-                        'My Profile',
+                        'Adding User',
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
@@ -72,7 +80,9 @@ class _MyProfileState extends State<MyProfile> {
                 alignment: Alignment.bottomRight,
                 children: [
                   CircleAvatar(
-                    backgroundImage: const AssetImage('images/profile.webp'),
+                    backgroundImage: _pickedImagePath != null
+                        ? FileImage(File(_pickedImagePath!))
+                        : const AssetImage('images/profile.webp') as ImageProvider,
                     radius: 12.w,
                   ),
                   Positioned(
@@ -86,7 +96,7 @@ class _MyProfileState extends State<MyProfile> {
                         shape: BoxShape.circle,
                       ),
                       child: Padding(
-                        padding: EdgeInsets.only(left: 0.w, right: 0.w),
+                        padding: EdgeInsets.all(0.0),
                         child: IconButton(
                           icon: Icon(Icons.camera_alt, size: 4.5.w, color: Colors.white),
                           onPressed: _pickImage,
@@ -103,7 +113,7 @@ class _MyProfileState extends State<MyProfile> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                "User ID: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "User ID: Auto Generated",
                 style: TextStyle(
                   fontSize: 8.sp,
                   color: Colors.grey,
@@ -156,14 +166,25 @@ class _MyProfileState extends State<MyProfile> {
                     },
                   ),
                   SizedBox(height: 2.h),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: 'Password',
+                  Padding(
+                    padding: EdgeInsets.only(left: 0.w, right: 0.w),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        border: const UnderlineInputBorder(),
+                        labelText: 'Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                            size: 17.sp,
+                            color: Colors.grey,
+                          ),
+                          onPressed: _togglePasswordVisibility,
+                        ),
+                      ),
+                      obscureText: _obscurePassword,
                     ),
-                    obscureText: true,
-                    enabled: false,
                   ),
+
                   SizedBox(height: 2.h),
                   DropdownButtonFormField<String>(
                     decoration: const InputDecoration(
@@ -184,7 +205,7 @@ class _MyProfileState extends State<MyProfile> {
                       });
                     },
                   ),
-                  SizedBox(height: 5.h),
+                  SizedBox(height: 8.h),
                   ElevatedButton(
                     onPressed: () {
                       print('Save Changes pressed');
@@ -198,59 +219,10 @@ class _MyProfileState extends State<MyProfile> {
                       minimumSize: const Size(double.infinity, 50), // Ensures the button takes full width
                     ),
                     child: const Text(
-                      'Save Changes',
+                      'Add User',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 2.h),
-                  ElevatedButton(
-                    onPressed: () {
-                    Navigator.push(
-                      context, PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        duration: const Duration(milliseconds: 305),  
-                        child: const Resetpw(),
-                      ),
-                    );    
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 2.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      minimumSize: const Size(double.infinity, 50), // Ensures the button takes full width
-                    ),
-                    child: const Text(
-                      'Reset Password',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 2.h),
-                  ElevatedButton(
-                    onPressed: () {
-                      print('Logout pressed');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 2.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: const BorderSide(color: Colors.red, width: 2), // Add border here
-                      ),
-                      minimumSize: const Size(double.infinity, 50), // Ensures the button takes full width
-                    ),
-                    child: const Text(
-                      'Logout',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 16,
                       ),
                     ),
                   ),
