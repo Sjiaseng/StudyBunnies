@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart'; // for page transition animation
 import 'package:sizer/sizer.dart'; // for responsive sizing
 import 'package:intl/intl.dart'; // for formating data
+import 'package:studybunnies/authentication/logoutscreen.dart';
 import 'package:studybunnies/studentscreens/classes.dart';
 import 'package:studybunnies/studentscreens/faq.dart';
 import 'package:studybunnies/studentscreens/feedback.dart';
@@ -426,6 +427,48 @@ Widget studentDrawer(BuildContext context, int drawercurrentindex) {
                             type: PageTransitionType.rightToLeft,
                             duration: const Duration(milliseconds: 205),
                             child: const Faqpage()));
+                  });
+                },
+              ),
+            ),
+            // Logout
+            Container(
+              color: drawercurrentindex == 8
+                  ? selectedContainerColor
+                  : unselectedContainerColor,
+              child: ListTile(
+                title: Padding(
+                  padding:
+                      EdgeInsets.only(left: 5.w), // Add padding to the text
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.logout_outlined,
+                        color: drawercurrentindex == 8
+                            ? selectedIconColor
+                            : unselectedIconColor,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Logout',
+                        style: drawercurrentindex == 7
+                            ? selectedStyle
+                            : normalStyle,
+                      ),
+                    ],
+                  ),
+                ),
+                selected: drawercurrentindex == 8,
+                onTap: () {
+                  // Navigate to Logout page
+                  Navigator.pop(context);
+                  Timer(const Duration(milliseconds: 205), () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            duration: const Duration(milliseconds: 205),
+                            child: const Logoutscreen()));
                   });
                 },
               ),
