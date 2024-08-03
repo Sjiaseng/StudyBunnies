@@ -14,15 +14,22 @@ class _FeedbacklistState extends State<Feedbacklist> {
 
   // Method to upload feedback data to Firestore
   Future<void> _uploadFeedback() async {
-    final feedbackCollectionRef = FirebaseFirestore.instance.collection('feedback');
+    final feedbackCollectionRef =
+        FirebaseFirestore.instance.collection('feedback');
 
     try {
-      await feedbackCollectionRef.add({
-        'feedbackID': DateTime.now().millisecondsSinceEpoch.toString(),
+      // Add a new document to the collection and get the document reference
+      final docRef = await feedbackCollectionRef.add({
         'generation_date': FieldValue.serverTimestamp(),
         'feedback_title': _selectedReason,
         'feedback_desc': _feedbackController.text,
       });
+
+      // Update the document with the feedbackID as the document ID
+      await docRef.update({
+        'feedbackID': docRef.id,
+      });
+
       print('Feedback submitted successfully!');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Feedback submitted successfully!')),
@@ -43,7 +50,8 @@ class _FeedbacklistState extends State<Feedbacklist> {
   void _validateAndSubmitFeedback() {
     if (_selectedReason == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a reason for your feedback.')),
+        const SnackBar(
+            content: Text('Please select a reason for your feedback.')),
       );
       return;
     }
@@ -111,9 +119,26 @@ class _FeedbacklistState extends State<Feedbacklist> {
                 value: _selectedReason,
                 decoration: const InputDecoration(
                   labelText: "Reason for feedback",
+                  labelStyle: TextStyle(color: Colors.grey), // Label color
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 2.0), // Border color on focus
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 1.0), // Border color when enabled
+                  ),
                 ),
-                items: ["Option 1", "Option 2", "Option 3"]
+                items: [
+                  "App Performance",
+                  "Feature Request",
+                  "Bug Report",
+                  "General Feedback",
+                  "Other"
+                ]
                     .map((option) => DropdownMenuItem(
                           value: option,
                           child: Text(option),
@@ -131,8 +156,13 @@ class _FeedbacklistState extends State<Feedbacklist> {
                 maxLines: 5,
                 decoration: const InputDecoration(
                   labelText: "Text area",
+                  labelStyle: TextStyle(color: Colors.grey), // Label color
                   border: OutlineInputBorder(),
-                  alignLabelWithHint: true, // Move label to top of the text area
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 2.0), // Border color on focus
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -140,11 +170,15 @@ class _FeedbacklistState extends State<Feedbacklist> {
                 child: SizedBox(
                   width: double.infinity, // Full width button
                   child: ElevatedButton(
-                    onPressed: _validateAndSubmitFeedback, // Call validation method
+                    onPressed:
+                        _validateAndSubmitFeedback, // Call validation method
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      backgroundColor: const Color.fromRGBO(100, 30, 30, 1), // Button background color
-                      foregroundColor: const Color.fromRGBO(239, 238, 233, 1), // Text color
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 15),
+                      backgroundColor: const Color.fromRGBO(
+                          100, 30, 30, 1), // Button background color
+                      foregroundColor:
+                          const Color.fromRGBO(239, 238, 233, 1), // Text color
                     ),
                     child: const Text("Submit"),
                   ),
