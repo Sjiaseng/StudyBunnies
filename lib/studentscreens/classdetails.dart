@@ -23,7 +23,7 @@ class _ClassdetailsState extends State<Classdetails> {
     'Chapter 2',
     'Chapter 3',
     'Chapter 4'
-  ]; // You can replace this with actual chapters
+  ];
   List<String> _filteredNotes = [];
 
   @override
@@ -42,15 +42,11 @@ class _ClassdetailsState extends State<Classdetails> {
 
   void _filterNotes() {
     final query = _searchController.text.toLowerCase();
-    if (query.isEmpty) {
-      setState(() {
-        _filteredNotes = List.from(_notes);
-      });
-    } else {
-      setState(() {
-        _filteredNotes = _notes.where((note) => note.toLowerCase().contains(query)).toList();
-      });
-    }
+    setState(() {
+      _filteredNotes = query.isEmpty
+          ? List.from(_notes)
+          : _notes.where((note) => note.toLowerCase().contains(query)).toList();
+    });
   }
 
   @override
@@ -91,6 +87,7 @@ class _ClassdetailsState extends State<Classdetails> {
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, // Aligns children to start
             children: [
               TextField(
                 controller: _searchController,
@@ -103,66 +100,65 @@ class _ClassdetailsState extends State<Classdetails> {
                 ),
               ),
               const SizedBox(height: 16.0),
+              Center(
+                child: Text(
+                  widget.className,
+                  style: const TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
               Expanded(
-                child: ListView(
-                  children: [
-                    _buildClassSection(widget.className, _filteredNotes),
-                  ],
+                child: ListView.builder(
+                  itemCount: _filteredNotes.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromRGBO(241, 241, 241, 1),
+                        border: Border.all(
+                          color: const Color.fromRGBO(217, 217, 217, 1),
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      margin: const EdgeInsets.only(bottom: 8.0),
+                      child: ListTile(
+                        title: Text(_filteredNotes[index]),
+                        trailing: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => NotesDetailsPage(
+                                  className: widget.className,
+                                  chapterName: _filteredNotes[index],
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: const Color.fromRGBO(217, 217, 217, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                          ),
+                          child: const Text('View'),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildClassSection(String className, List<String> notes) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Center(
-          child: Text(
-            className,
-            style: const TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8.0),
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: notes.length,
-          itemBuilder: (context, index) {
-            return Card(
-              child: ListTile(
-                title: Text(notes[index]),
-                trailing: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NotesDetailsPage(
-                          className: className,
-                          chapterName: notes[index],
-                        ),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0), // Adjust the radius as needed
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  ),
-                  child: const Text('View'),
-                ),
-              ),
-            );
-          },
-        ),
-      ],
     );
   }
 }

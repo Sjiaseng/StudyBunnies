@@ -78,8 +78,8 @@ class _SplashscreenState extends State<Splashscreen> {
           type: PageTransitionType.rightToLeft, 
           duration: const Duration(milliseconds: 500), 
           //child: const Loginscreen(),
-          child: const AdminDashboard(),
-          //child: const StudentDashboard(),
+          //child: const AdminDashboard(),
+          child: const StudentDashboard(),
           //child: const TeacherDashboard(),
         ),
       );

@@ -45,7 +45,7 @@ Widget timetableContent(BuildContext context, String courseTitle,
     height: 20.h,
     margin: EdgeInsets.only(bottom: 1.h),
     decoration: BoxDecoration(
-      color: const Color.fromRGBO(241, 241, 241, 1),
+      color: const Color.fromRGBO(241, 241, 241, 1), // background color for the content
       border:
           Border.all(color: const Color.fromRGBO(217, 217, 217, 1), width: 1.0),
       borderRadius: BorderRadius.circular(8.0),

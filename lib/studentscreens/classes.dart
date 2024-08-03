@@ -16,7 +16,8 @@ class Classlist extends StatefulWidget {
 
 class _ClasslistState extends State<Classlist> {
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _classes = List<String>.generate(10, (index) => 'Class ${index + 1}');
+  final List<String> _classes =
+      List<String>.generate(10, (index) => 'Class ${index + 1}');
   List<String> _filteredClasses = [];
 
   @override
@@ -41,7 +42,9 @@ class _ClasslistState extends State<Classlist> {
       });
     } else {
       setState(() {
-        _filteredClasses = _classes.where((className) => className.toLowerCase().contains(query)).toList();
+        _filteredClasses = _classes
+            .where((className) => className.toLowerCase().contains(query))
+            .toList();
       });
     }
   }
@@ -74,7 +77,8 @@ class _ClasslistState extends State<Classlist> {
         }
       },
       child: Scaffold(
-        appBar: mainappbar("Classes", "This interface will display the list of classes.", context),
+        appBar: mainappbar("Classes",
+            "This interface will display the list of classes.", context),
         bottomNavigationBar: navbar(3),
         drawer: studentDrawer(context, 3),
         body: Padding(
@@ -96,29 +100,54 @@ class _ClasslistState extends State<Classlist> {
                 child: ListView.builder(
                   itemCount: _filteredClasses.length,
                   itemBuilder: (context, index) {
-                    return Card(
-                      child: ListTile(
-                        title: Row(
-                          children: [
-                            Expanded(child: Text(_filteredClasses[index])),
-                            const SizedBox(
-                              width: 100,
-                              child: LinearProgressIndicator(
-                                value: 0.7, // Example progress value
-                              ),
-                            ),
-                          ],
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 4.0, // Space between cards
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color.fromRGBO(217, 217, 217, 1),
+                          width: 1.0, // Border color and width
                         ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              duration: const Duration(milliseconds: 305),
-                              child: Classdetails(className: _filteredClasses[index]),
-                            ),
-                          );
-                        },
+                        borderRadius:
+                            BorderRadius.circular(8.0), // Corner radius
+                      ),
+                      child: Card(
+                        margin: EdgeInsets.zero, // Remove default margin
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              8.0), // Corner radius for the Card
+                        ),
+                        color: const Color.fromRGBO(241, 241, 241, 1),
+                        child: ListTile(
+                          title: Row(
+                            children: [
+                              Expanded(child: Text(_filteredClasses[index])),
+                              const SizedBox(
+                                width: 100,
+                                child: LinearProgressIndicator(
+                                  value: 0.7, // Example progress value
+                                  backgroundColor: Colors
+                                      .white, // Background color of progress bar
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color.fromRGBO(195, 154, 28,1), // Color of progress bar
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                duration: const Duration(milliseconds: 305),
+                                child: Classdetails(
+                                    className: _filteredClasses[index]),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     );
                   },
