@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore package
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:studybunnies/adminscreens/adminsubpage/adduser.dart';
@@ -9,7 +10,6 @@ import 'package:studybunnies/adminwidgets/bottomnav.dart';
 import 'package:studybunnies/adminwidgets/drawer.dart';
 import 'package:sizer/sizer.dart';
 
-
 class Userlist extends StatefulWidget {
   const Userlist({super.key});
 
@@ -19,113 +19,122 @@ class Userlist extends StatefulWidget {
 
 class _UserlistState extends State<Userlist> {
   List<bool> selectedFilters = [true, false, false, false];
+  String searchQuery = '';
+  String roleFilter = 'All';
 
-  TextEditingController mycontroller = TextEditingController();
-
+  // Function to handle filter button selection
   void focusButton(int index) {
     setState(() {
       for (int buttonIndex = 0; buttonIndex < selectedFilters.length; buttonIndex++) {
-        if (buttonIndex == index) {
-          selectedFilters[buttonIndex] = true;
-        } else {
-          selectedFilters[buttonIndex] = false;
-        }
+        selectedFilters[buttonIndex] = buttonIndex == index;
+      }
+      switch (index) {
+        case 0:
+          roleFilter = 'All';
+          break;
+        case 1:
+          roleFilter = 'Student';
+          break;
+        case 2:
+          roleFilter = 'Teacher';
+          break;
+        case 3:
+          roleFilter = 'Admin';
+          break;
       }
     });
   }
 
-@override
-Widget build(BuildContext context) {
-  return GestureDetector(
-    onPanUpdate: (details) {
-      // Swiping in right direction.
-      if (details.delta.dx > 25) {
-        Navigator.push(
-          context, PageTransition(
-            type: PageTransitionType.leftToRight,
-            duration: const Duration(milliseconds: 305),
-            child: const Timetablelist(),
-          ),
-        );
-      }
-      // Swiping in left direction.
-      if (details.delta.dx < -25) {
-        Navigator.push(
-          context, PageTransition(
-            type: PageTransitionType.rightToLeft,
-            duration: const Duration(milliseconds: 305),
-            child: const AdminDashboard(),
-          ),
-        );
-      }
-    },
-    child: Scaffold(
-      appBar: mainappbar("Users", "This page contains all information for the users registered in StudyBunnies", context),
-      bottomNavigationBar: navbar(1),
-      drawer: adminDrawer(context, 3),
-      body: Padding(
-        padding: EdgeInsets.only(left: 5.w, top: 1.5.h, right: 5.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ToggleButtons(
-              textStyle: const TextStyle(fontFamily: 'Roboto'),
-              constraints: BoxConstraints(minWidth: 2.w, minHeight: 3.h),
-              isSelected: selectedFilters,
-              borderRadius: BorderRadius.circular(2.w),
-              onPressed: focusButton,
-              selectedColor: Colors.black,
-              fillColor: Colors.grey,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Text(
-                    'All',
-                    style: TextStyle(
-                      fontWeight: selectedFilters[0] ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Text(
-                    'Students',
-                    style: TextStyle(
-                      fontWeight: selectedFilters[1] ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Text(
-                    'Teachers',
-                    style: TextStyle(
-                      fontWeight: selectedFilters[2] ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Text(
-                    'Admins',
-                    style: TextStyle(
-                      fontWeight: selectedFilters[3] ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ),
-              ],
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onPanUpdate: (details) {
+        if (details.delta.dx > 25) {
+          Navigator.push(
+            context,
+            PageTransition(
+              type: PageTransitionType.leftToRight,
+              duration: const Duration(milliseconds: 305),
+              child: const Timetablelist(),
             ),
-
-            SizedBox(height: 1.h), 
-
-            Container( 
-              padding: EdgeInsets.all(1.w),
-              width: 90.w,
-              decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: Colors.grey),
+          );
+        }
+        if (details.delta.dx < -25) {
+          Navigator.push(
+            context,
+            PageTransition(
+              type: PageTransitionType.rightToLeft,
+              duration: const Duration(milliseconds: 305),
+              child: const AdminDashboard(),
             ),
-              child:Row(
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: mainappbar("Users", "This page contains all information for the users registered in StudyBunnies", context),
+        bottomNavigationBar: navbar(1),
+        drawer: adminDrawer(context, 3),
+        body: Padding(
+          padding: EdgeInsets.only(left: 5.w, top: 1.5.h, right: 5.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ToggleButtons(
+                textStyle: const TextStyle(fontFamily: 'Roboto'),
+                constraints: BoxConstraints(minWidth: 2.w, minHeight: 3.h),
+                isSelected: selectedFilters,
+                borderRadius: BorderRadius.circular(2.w),
+                onPressed: focusButton,
+                selectedColor: Colors.black,
+                fillColor: Colors.grey,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.w),
+                    child: Text(
+                      'All',
+                      style: TextStyle(
+                        fontWeight: selectedFilters[0] ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.w),
+                    child: Text(
+                      'Students',
+                      style: TextStyle(
+                        fontWeight: selectedFilters[1] ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.w),
+                    child: Text(
+                      'Teachers',
+                      style: TextStyle(
+                        fontWeight: selectedFilters[2] ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.w),
+                    child: Text(
+                      'Admins',
+                      style: TextStyle(
+                        fontWeight: selectedFilters[3] ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 1.h),
+              Container(
+                padding: EdgeInsets.all(1.w),
+                width: 90.w,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: Row(
                   children: [
                     SizedBox(width: 2.0.w),
                     const Icon(Icons.search),
@@ -136,88 +145,121 @@ Widget build(BuildContext context) {
                           hintText: 'Search',
                           border: InputBorder.none,
                         ),
-                        // Add your controller and onChanged callback here
-                        controller: mycontroller,
                         onChanged: (value) {
-                          // Implement your search logic here
+                          setState(() {
+                            searchQuery = value;
+                          });
                         },
                       ),
                     ),
                   ],
                 ),
-            ),
+              ),
+              SizedBox(height: 2.h),
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('users').snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-            SizedBox(height: 2.h),
+                    var users = snapshot.data!.docs.where((user) {
+                      if (roleFilter != 'All' && user['role'] != roleFilter) {
+                        return false;
+                      }
+                      if (searchQuery.isNotEmpty && !user['username'].toString().toLowerCase().contains(searchQuery.toLowerCase())) {
+                        return false;
+                      }
+                      return true;
+                    }).toList();
 
-            Expanded(
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: 10,
-                  itemBuilder: (BuildContext context, int index) {
-                    return InkWell(
-                      borderRadius: BorderRadius.circular(3.w),
-                      onTap: () {
-                        Navigator.push(
-                          context, PageTransition(
-                          type: PageTransitionType.rightToLeft,
-                            duration: const Duration(milliseconds: 305),  
-                            child: const Edituser(),
+                    users.sort((a, b) => a['username'].compareTo(b['username']));
+
+                  if (users.isEmpty) {
+                    return Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'images/norecord.png', 
                           ),
-                        ); 
-                      },
-                      child: Container(
-                        width: 90.w,
-                        padding: EdgeInsets.all(2.w),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: const AssetImage('images/profile.webp'),
-                              radius: 7.w,
-                            ),
-
-                            SizedBox(width: 5.w),
-
-                            SizedBox(
-                              width: 50.w,
-                              child: Text(
-                                'User ${index + 1}',
-                                maxLines: 2,
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontFamily: 'Roboto',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                              const Spacer(),
-
-                              const Icon(Icons.keyboard_arrow_right_outlined),
-                          ],
-                        ),
+                        ],
                       ),
+                    );
+                  }
+
+                    return ListView.builder(
+                      itemCount: users.length,
+                      itemBuilder: (context, index) {
+                        var user = users[index];
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(3.w),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                duration: const Duration(milliseconds: 305),
+                                child: Edituser(userID: user.id),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 90.w,
+                            padding: EdgeInsets.all(2.w),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundImage: user['profile_img'] != ""
+                                      ? NetworkImage(user['profile_img'])
+                                      : const AssetImage('images/profile.webp') as ImageProvider,
+                                  radius: 7.w,
+                                ),
+                                SizedBox(width: 5.w),
+                                SizedBox(
+                                  width: 50.w,
+                                  child: Text(
+                                    user['username'],
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      fontFamily: 'Roboto',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                const Icon(Icons.keyboard_arrow_right_outlined),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
               ),
-          ],
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                duration: const Duration(milliseconds: 305),
+                child: const Adduser(),
+              ),
+            );
+          },
+          backgroundColor: const Color.fromARGB(255, 100, 30, 30),
+          shape: const CircleBorder(),
+          child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-        Navigator.push(
-          context, PageTransition(
-          type: PageTransitionType.rightToLeft,
-            duration: const Duration(milliseconds: 305),  
-            child: const Adduser(),
-          ),
-        ); 
-          // Add your action here
-        },
-        backgroundColor: const Color.fromARGB(255, 100, 30, 30), // RGB(100, 30, 30)
-        shape: const CircleBorder(), // Ensures the shape is round
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-    ),
-  );
-}
+    );
+  }
 }

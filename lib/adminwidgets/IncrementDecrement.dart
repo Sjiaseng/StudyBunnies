@@ -2,84 +2,80 @@ import 'package:flutter/material.dart';
 
 class IncrementDecrementFormField extends StatefulWidget {
   final String labelText;
+  final TextEditingController controller;
+  final String? Function(String?)? validator;
 
-  const IncrementDecrementFormField({super.key, required this.labelText});
+  const IncrementDecrementFormField({
+    super.key,
+    required this.labelText,
+    required this.controller,
+    this.validator,
+  });
 
   @override
-  // ignore: library_private_types_in_public_api
   _IncrementDecrementFormFieldState createState() => _IncrementDecrementFormFieldState();
 }
 
 class _IncrementDecrementFormFieldState extends State<IncrementDecrementFormField> {
   int _value = 0;
-  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _controller.text = _value.toString();
+    _value = int.tryParse(widget.controller.text) ?? 0;
+    widget.controller.text = _value.toString();
   }
 
-  // Method to increase the value
   void _increaseValue() {
     setState(() {
       _value++;
-      _controller.text = _value.toString();
+      widget.controller.text = _value.toString();
     });
   }
 
-  // Method to decrease the value
   void _decreaseValue() {
     setState(() {
       if (_value > 0) {
         _value--;
-        _controller.text = _value.toString();
+        widget.controller.text = _value.toString();
       }
     });
   }
 
-  // Method to handle changes from the text field
   void _handleTextChanged(String value) {
     final int? newValue = int.tryParse(value);
     if (newValue != null && newValue >= 0) {
       setState(() {
         _value = newValue;
       });
+    } else {
+      widget.controller.text = _value.toString();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        IconButton(
-          onPressed: _decreaseValue,
-          icon: const Icon(Icons.remove),
-        ),
-        Expanded(
-          child: TextFormField(
-            controller: _controller,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              labelText: widget.labelText,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+    return TextFormField(
+      controller: widget.controller,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        labelText: widget.labelText,
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed: _decreaseValue,
             ),
-            textAlign: TextAlign.center,
-            onChanged: _handleTextChanged, // Handle text field changes
-          ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: _increaseValue,
+            ),
+          ],
         ),
-        IconButton(
-          onPressed: _increaseValue,
-          icon: const Icon(Icons.add),
-        ),
-      ],
+      ),
+      validator: widget.validator,
+      onChanged: _handleTextChanged,
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }
