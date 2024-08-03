@@ -77,89 +77,89 @@ class _EdituserState extends State<Edituser> {
     return _pickedImagePath != null && _pickedImagePath!.isNotEmpty;
   }
 
-Future<void> _submitForm() async {
-  if (_formKey.currentState!.validate()) {
-    final usersCollection = FirebaseFirestore.instance.collection('users');
-    final auth = FirebaseAuth.instance;
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      final usersCollection = FirebaseFirestore.instance.collection('users');
+      final auth = FirebaseAuth.instance;
 
-    try {
-      String profileImageUrl = '';
+      try {
+        String profileImageUrl = '';
 
-      if (_pickedImagePath != null && !_pickedImagePath!.startsWith('http')) {
-        File file = File(_pickedImagePath!);
+        if (_pickedImagePath != null && !_pickedImagePath!.startsWith('http')) {
+          File file = File(_pickedImagePath!);
 
-        if (!file.existsSync()) {
-          throw Exception('File does not exist at path: ${file.path}');
-        }
+          if (!file.existsSync()) {
+            throw Exception('File does not exist at path: ${file.path}');
+          }
 
-        TaskSnapshot snapshot = await FirebaseStorage.instance
-            .ref('profile_images/${widget.userID}')
-            .putFile(file);
-        profileImageUrl = await snapshot.ref.getDownloadURL();
-      } else {
-        final userDoc = await FirebaseFirestore.instance.collection('users').doc(widget.userID).get();
-        if (userDoc.exists) {
-          final data = userDoc.data()!;
-          profileImageUrl = data['profile_img'] ?? ''; // Retain existing URL
-        }
-      }
-
-      DocumentReference docRef = usersCollection.doc(widget.userID);
-      await docRef.update({
-        'username': _nameController.text,
-        'contactnumber': _contactNumberController.text,
-        'country': _selectedCountry,
-        'role': _selectedRole,
-        'email': _emailController.text,
-        'password': _passwordController.text,
-        'profile_img': profileImageUrl,
-      });
-
-      // Update email
-      User? user = auth.currentUser;
-      if (user != null && user.uid == widget.userID) {
-        if (_emailController.text.isNotEmpty) {
-          try {
-            await user.verifyBeforeUpdateEmail(_emailController.text);
-          } catch (e) {
-            print('Error sending email verification: $e');
+          TaskSnapshot snapshot = await FirebaseStorage.instance
+              .ref('profile_images/${widget.userID}')
+              .putFile(file);
+          profileImageUrl = await snapshot.ref.getDownloadURL();
+        } else {
+          final userDoc = await FirebaseFirestore.instance.collection('users').doc(widget.userID).get();
+          if (userDoc.exists) {
+            final data = userDoc.data()!;
+            profileImageUrl = data['profile_img'] ?? ''; // Retain existing URL
           }
         }
-      } else {
-        print('User is null or UID does not match');
-      }
 
-      if (mounted) {
-        showTopSnackBar(
-          context,
-          'User Updated Successfully!',
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-        );
-        Navigator.pop(context);
+        DocumentReference docRef = usersCollection.doc(widget.userID);
+        await docRef.update({
+          'username': _nameController.text,
+          'contactnumber': _contactNumberController.text,
+          'country': _selectedCountry,
+          'role': _selectedRole,
+          'email': _emailController.text,
+          'password': _passwordController.text,
+          'profile_img': profileImageUrl,
+        });
+
+        // Update email
+        User? user = auth.currentUser;
+        if (user != null && user.uid == widget.userID) {
+          if (_emailController.text.isNotEmpty) {
+            try {
+              await user.verifyBeforeUpdateEmail(_emailController.text);
+            } catch (e) {
+              print('Error sending email verification: $e');
+            }
+          }
+        } else {
+          print('User is null or UID does not match');
+        }
+
+        if (mounted) {
+          showTopSnackBar(
+            context,
+            'User Updated Successfully!',
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
+          Navigator.pop(context);
+        }
+      } catch (e) {
+        print('Error during form submission: $e');
+        if (mounted) {
+          showTopSnackBar(
+            context,
+            'Update Failed!',
+            backgroundColor: const Color.fromARGB(255, 246, 77, 65),
+            textColor: Colors.white,
+          );
+        }
       }
-    } catch (e) {
-      print('Error during form submission: $e');
-      if (mounted) {
+    } else {
+      if (!_isProfilePictureAdded()) {
         showTopSnackBar(
           context,
-          'Update Failed!',
+          'Please Include a Profile Picture!',
           backgroundColor: const Color.fromARGB(255, 246, 77, 65),
           textColor: Colors.white,
         );
       }
     }
-  } else {
-    if (!_isProfilePictureAdded()) {
-      showTopSnackBar(
-        context,
-        'Please Include a Profile Picture!',
-        backgroundColor: const Color.fromARGB(255, 246, 77, 65),
-        textColor: Colors.white,
-      );
-    }
   }
-}
 
 Future<void> _deleteUser() async {
   final auth = FirebaseAuth.instance;
@@ -483,7 +483,7 @@ Future<void> _deleteUser() async {
                     SizedBox(height: 4.h),
 
                     ElevatedButton(
-                      onPressed: _selectedRole == 'Admin' ? null : _submitForm,
+                      onPressed: _selectedRole == 'Admin' ? null : null,//_submitForm,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 2.h),

@@ -49,6 +49,9 @@ class _AdduserState extends State<Adduser> {
       final usersCollection = FirebaseFirestore.instance.collection('users');
       final auth = FirebaseAuth.instance;
 
+      print(_emailController.text);
+      print(_passwordController.text);
+
       try {
         UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: _emailController.text,
@@ -356,7 +359,7 @@ class _AdduserState extends State<Adduser> {
                       showSelectedItems: true,
                       showSearchBox: false,
                     ),
-                    items: const <String>['Student', 'Teacher'],
+                    items: const <String>['Student', 'Teacher', 'Admin'],
                     dropdownDecoratorProps: DropDownDecoratorProps(
                       dropdownSearchDecoration: InputDecoration(
                         labelText: 'Role',

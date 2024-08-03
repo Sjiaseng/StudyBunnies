@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'package:studybunnies/adminscreens/myprofile.dart';
-import 'package:studybunnies/adminscreens/logout.dart';
+import 'package:studybunnies/authentication/logoutscreen.dart';
 
 AppBar mainappbar(String title, String helpmsg, BuildContext context) {
   return AppBar(
@@ -55,7 +55,7 @@ AppBar mainappbar(String title, String helpmsg, BuildContext context) {
             context, PageTransition(
               type: PageTransitionType.topToBottom,
               duration: const Duration(milliseconds: 305),  
-              child: const Notificationpage()
+              child: const Logoutscreen()
             )    
           );  
         },
@@ -117,7 +117,7 @@ AppBar subappbar(String title, BuildContext context) {
             context, PageTransition(
               type: PageTransitionType.topToBottom,
               duration: const Duration(milliseconds: 305),  
-              child: const Notificationpage()
+              child: const Logoutscreen()
             )    
           );  
         },
