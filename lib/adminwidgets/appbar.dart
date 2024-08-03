@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
-import 'package:studybunnies/adminscreens/logout.dart';
 import 'package:studybunnies/adminscreens/myprofile.dart';
+import 'package:studybunnies/adminscreens/logout.dart';
 
 AppBar mainappbar(String title, String helpmsg, BuildContext context) {
   return AppBar(
@@ -10,13 +10,12 @@ AppBar mainappbar(String title, String helpmsg, BuildContext context) {
     title: Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(color: Color.fromRGBO(239, 238, 233, 1)),
-        ),
+        Text(title, style: const TextStyle(color: Color.fromRGBO(239, 238, 233, 1)),),
+
         SizedBox(width: 2.w),
+
         Tooltip(
-          message: helpmsg,
+          message: helpmsg, 
           child: Padding(
             padding: EdgeInsets.only(top: 0.5.h),
             child: Icon(
@@ -32,18 +31,17 @@ AppBar mainappbar(String title, String helpmsg, BuildContext context) {
       IconButton(
         icon: Icon(
           Icons.person_pin,
-          size: 3.0.h,
+          size: 3.0.h, 
           color: const Color.fromRGBO(239, 238, 233, 1),
         ),
         onPressed: () {
           Navigator.push(
-            context,
-            PageTransition(
+            context, PageTransition(
               type: PageTransitionType.topToBottom,
-              duration: const Duration(milliseconds: 305),
-              child: const MyProfile(),
-            ),
-          );
+              duration: const Duration(milliseconds: 305),  
+              child: const MyProfile()
+            )    
+          );  
         },
       ),
       IconButton(
@@ -68,7 +66,7 @@ AppBar mainappbar(String title, String helpmsg, BuildContext context) {
         return IconButton(
           icon: const Icon(
             Icons.menu,
-            color: Color.fromRGBO(239, 238, 233, 1),
+            color: Color.fromRGBO(239, 238, 233, 1), // Change the color of the drawer icon here
           ),
           onPressed: () {
             Scaffold.of(context).openDrawer();
@@ -85,10 +83,8 @@ AppBar subappbar(String title, BuildContext context) {
     title: Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(color: Color.fromRGBO(239, 238, 233, 1)),
-        ),
+        Text(title, style: const TextStyle(color: Color.fromRGBO(239, 238, 233, 1)),),
+
         SizedBox(width: 2.w),
       ],
     ),
@@ -96,18 +92,17 @@ AppBar subappbar(String title, BuildContext context) {
       IconButton(
         icon: Icon(
           Icons.person_pin,
-          size: 3.0.h,
+          size: 3.0.h, 
           color: const Color.fromRGBO(239, 238, 233, 1),
         ),
         onPressed: () {
           Navigator.push(
-            context,
-            PageTransition(
+            context, PageTransition(
               type: PageTransitionType.topToBottom,
-              duration: const Duration(milliseconds: 305),
-              child: const MyProfile(),
-            ),
-          );
+              duration: const Duration(milliseconds: 305),  
+              child: const MyProfile()
+            )    
+          );  
         },
       ),
 
@@ -128,14 +123,14 @@ AppBar subappbar(String title, BuildContext context) {
         },
       ),
     ],
-    leading: GestureDetector(
-      onTap: () {
-        Navigator.pop(context);
-      },
-      child: const Icon(
-        Icons.arrow_back,
-        color: Colors.white,
-      ),
-    ),
+  leading: GestureDetector( 
+    onTap: (){
+      Navigator.pop(context);
+    },
+    child: const Icon(
+    Icons.arrow_back,
+    color: Colors.white,
+  ),
+  ),
   );
 }
