@@ -5,21 +5,23 @@ import 'package:sizer/sizer.dart';
 Widget timetableHeader(String mydate) {
   return Container(
     margin: EdgeInsets.only(
-        bottom: 2.h), // Adds margin below the header for spacing
+        bottom: 2.h // Adds margin below the header for spacing
+        ), 
     width: double.infinity, // Full width of the container
     height: 5.h, // Sets the height of the container to 5% of the screen height
     decoration: BoxDecoration(
-      color: const Color.fromRGBO(
-          217, 217, 217, 1), // Background color of the header
+      color: const Color.fromRGBO(217, 217, 217, 1), // Background color of the header
       border: Border.all(
           color: const Color.fromRGBO(217, 217, 217, 1),
-          width: 1.0), // Border with the same color and 1.0 width
+          width: 1.0  
+          ),
       borderRadius: BorderRadius.circular(8.0),
     ),
     child: Padding(
       padding: EdgeInsets.symmetric(
           horizontal:
-              5.w), // Added padding to avoid text being too close to the border
+              5.w // Added padding to avoid text being too close to the border
+              ),
       child: Align(
         alignment: Alignment.centerLeft, // Align date text to the left
         child: Text(
@@ -50,7 +52,9 @@ Widget timetableContent(BuildContext context, String courseTitle,
     ),
     child: Padding(
       padding: EdgeInsets.only(
-          left: 5.w, right: 5.w), // Padding on the left and right sides
+          left: 5.w, 
+          right: 5.w
+          ), 
       child: Column(
         crossAxisAlignment:
             CrossAxisAlignment.start, // Aligns children to the left
@@ -58,7 +62,8 @@ Widget timetableContent(BuildContext context, String courseTitle,
           // Displays the course title
           Padding(
             padding: EdgeInsets.only(
-                top: 2.h), // Padding from the top of the container
+                top: 2.h // Padding from the top of the container
+                ),
             child: Text(
               courseTitle, // Course title string
               maxLines: 1, // Limits the text to a single line
@@ -98,7 +103,8 @@ Widget timetableContent(BuildContext context, String courseTitle,
               Padding(
                 padding: EdgeInsets.only(
                     top: 1.h,
-                    left: 1.w), // Padding from the icon and previous text
+                    left: 1.w
+                    ),
                 child: Text(
                   venue, // Venue string
                   style: TextStyle(
@@ -124,7 +130,8 @@ Widget timetableContent(BuildContext context, String courseTitle,
               Padding(
                 padding: EdgeInsets.only(
                     top: 1.h,
-                    left: 1.w), // Padding from the icon and previous text
+                    left: 1.w
+                    ), 
                 child: Text(
                   '$timestart - $timeend', // Time range string
                   style: TextStyle(
