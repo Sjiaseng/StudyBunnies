@@ -9,10 +9,16 @@ import 'package:studybunnies/studentwidgets/drawer.dart';
 
 // Defining the StudentDashboard class which is a StatelessWidget
 class StudentDashboard extends StatelessWidget {
-  const StudentDashboard({Key? key});
+  const StudentDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
+
+    print("StudentDashboard build method called");
+
+ // Debug print to ensure widget is being built
+    print("Building StudentDashboard widget");
+
     // Setting the system UI overlay style (status bar color and brightness)
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.black, // Set status bar color to black
