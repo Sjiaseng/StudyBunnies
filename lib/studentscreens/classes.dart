@@ -80,7 +80,7 @@ class _ClasslistState extends State<Classlist> {
         appBar: mainappbar("Classes",
             "This interface will display the list of classes.", context),
         bottomNavigationBar: navbar(3),
-        drawer: studentDrawer(context, 3),
+        drawer: StudentDrawer(drawercurrentindex: 3, userID: 'userID'),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

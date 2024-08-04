@@ -101,7 +101,7 @@ class _NoteslistState extends State<Noteslist> {
         appBar: mainappbar("Notes",
             "This page contains all accessible notes for the user", context),
         bottomNavigationBar: navbar(1),
-        drawer: studentDrawer(context, 2),
+        drawer: StudentDrawer(drawercurrentindex: 2, userID: 'userID'),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

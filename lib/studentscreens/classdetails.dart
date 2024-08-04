@@ -83,7 +83,7 @@ class _ClassdetailsState extends State<Classdetails> {
           context,
         ),
         bottomNavigationBar: navbar(1),
-        drawer: studentDrawer(context, 2),
+        drawer: StudentDrawer(drawercurrentindex: 3, userID: 'userID'),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

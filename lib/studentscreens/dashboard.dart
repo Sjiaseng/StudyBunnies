@@ -51,7 +51,7 @@ class StudentDashboard extends StatelessWidget {
         // App bar at the top of the screen
         appBar: mainappbar("Home", "This is students dashboard.", context),
         // Drawer (side menu) for the student dashboard
-        drawer: studentDrawer(context, 0),
+        drawer: StudentDrawer(drawercurrentindex: 0, userID: 'userID'),
         // Main body content of the screen
         body: const Center(
           child: Text('Student Main Page'),

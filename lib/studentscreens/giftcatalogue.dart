@@ -53,7 +53,7 @@ class _GiftlistState extends State<Giftlist> {
           "This section includes the list of gifts that can be redeemed by the students.",
           context,
         ),
-        drawer: studentDrawer(context, 5),
+        drawer: StudentDrawer(drawercurrentindex: 5, userID: 'userID'),
         bottomNavigationBar: navbar(4),
         body: Padding(
           padding: EdgeInsets.only(left: 3.w, right: 3.w, top: 0.h),

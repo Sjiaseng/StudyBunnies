@@ -76,7 +76,7 @@ class _TimetablelistState extends State<Timetablelist> {
           context,
         ),
         bottomNavigationBar: navbar(0), // Bottom navigation bar
-        drawer: studentDrawer(context, 1), // Navigation drawer
+        drawer: StudentDrawer(drawercurrentindex: 1, userID: 'userID'), // Navigation drawer
         body: Padding(
           padding: EdgeInsets.only(left: 5.w, right: 5.w, top: 2.h),
           child: Column(

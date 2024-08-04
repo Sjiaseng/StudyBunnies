@@ -15,7 +15,7 @@ class _PointsState extends State<Points> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: mainappbar("Points", "This section consists of student points.", context),
-      drawer: studentDrawer(context, 4),
+      drawer: StudentDrawer(drawercurrentindex: 4, userID: 'userID'),
       bottomNavigationBar: inactivenavbar(),
       body: const Center(child:Text("Student Points"),),
     );

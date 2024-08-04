@@ -79,7 +79,7 @@ class _FaqpageState extends State<Faqpage> {
           ],
         ),
       ),
-      drawer: studentDrawer(context, 7),
+      drawer: StudentDrawer(drawercurrentindex: 7, userID: 'userID'),
     );
   }
 
