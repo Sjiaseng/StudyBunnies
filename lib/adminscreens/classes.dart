@@ -9,6 +9,7 @@ import 'package:studybunnies/adminwidgets/appbar.dart';
 import 'package:studybunnies/adminwidgets/bottomnav.dart';
 import 'package:studybunnies/adminwidgets/drawer.dart';
 import 'package:sizer/sizer.dart';
+import 'package:studybunnies/authentication/session.dart';
 
 class Classlist extends StatefulWidget {
   const Classlist({super.key});
@@ -18,6 +19,30 @@ class Classlist extends StatefulWidget {
 }
 
 class _ClasslistState extends State<Classlist> {
+
+  final Session session = Session();
+  String? userId;
+  String? userName;
+  String? profileImage;
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    userId = await session.getUserId();
+    if (userId != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId!).get();
+      if (userDoc.exists) {
+        setState(() {
+          userName = userDoc['username'];
+          profileImage = userDoc['profileImage'];
+        });
+      }
+    }
+  }
+  
   List<bool> selectedFilters = [true, false, false];
   TextEditingController mycontroller = TextEditingController();
   String searchQuery = '';
@@ -64,7 +89,7 @@ class _ClasslistState extends State<Classlist> {
           context,
         ),
         bottomNavigationBar: navbar(3),
-        drawer: adminDrawer(context, 2),
+        drawer: const AdminDrawer(initialIndex: 2),
         body: Padding(
           padding: EdgeInsets.only(left: 5.w, top: 1.5.h, right: 5.w),
           child: Column(

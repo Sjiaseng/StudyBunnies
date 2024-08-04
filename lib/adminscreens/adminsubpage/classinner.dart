@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:studybunnies/adminscreens/adminsubpage/adduser.dart';
@@ -7,6 +8,7 @@ import 'package:studybunnies/adminwidgets/appbar.dart';
 import 'package:studybunnies/adminwidgets/bottomnav.dart';
 import 'package:studybunnies/adminwidgets/drawer.dart';
 import 'package:sizer/sizer.dart';
+import 'package:studybunnies/authentication/session.dart';
 
 
 class Classinner extends StatefulWidget {
@@ -18,6 +20,28 @@ class Classinner extends StatefulWidget {
 }
 
 class _ClassinnerState extends State<Classinner> {
+  final Session session = Session();
+  String? userId;
+  String? userName;
+  String? profileImage;
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    userId = await session.getUserId();
+    if (userId != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId!).get();
+      if (userDoc.exists) {
+        setState(() {
+          userName = userDoc['username'];
+          profileImage = userDoc['profileImage'];
+        });
+      }
+    }
+  }
   List<bool> selectedFilters = [true, false, false, false];
 
   TextEditingController mycontroller = TextEditingController();
@@ -62,7 +86,7 @@ Widget build(BuildContext context) {
     child: Scaffold(
       appBar: subappbar("Class Name Here", context),
       bottomNavigationBar: navbar(3),
-      drawer: adminDrawer(context, 3),
+      drawer: const AdminDrawer(initialIndex: 3),
       body: Padding(
         padding: EdgeInsets.only(left: 5.w, top: 1.5.h, right: 5.w),
         child: Column(

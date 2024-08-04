@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore package
+import 'package:cloud_firestore/cloud_firestore.dart'; 
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:studybunnies/adminscreens/adminsubpage/adduser.dart';
@@ -9,6 +9,7 @@ import 'package:studybunnies/adminwidgets/appbar.dart';
 import 'package:studybunnies/adminwidgets/bottomnav.dart';
 import 'package:studybunnies/adminwidgets/drawer.dart';
 import 'package:sizer/sizer.dart';
+import 'package:studybunnies/authentication/session.dart';
 
 class Userlist extends StatefulWidget {
   const Userlist({super.key});
@@ -18,11 +19,34 @@ class Userlist extends StatefulWidget {
 }
 
 class _UserlistState extends State<Userlist> {
+  final Session session = Session();
+  String? userId;
+  String? userName;
+  String? profileImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    userId = await session.getUserId();
+    if (userId != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId!).get();
+      if (userDoc.exists) {
+        setState(() {
+          userName = userDoc['username'];
+          profileImage = userDoc['profileImage'];
+        });
+      }
+    }
+  }
+  
   List<bool> selectedFilters = [true, false, false, false];
   String searchQuery = '';
   String roleFilter = 'All';
 
-  // Function to handle filter button selection
   void focusButton(int index) {
     setState(() {
       for (int buttonIndex = 0; buttonIndex < selectedFilters.length; buttonIndex++) {
@@ -71,9 +95,13 @@ class _UserlistState extends State<Userlist> {
         }
       },
       child: Scaffold(
-        appBar: mainappbar("Users", "This page contains all information for the users registered in StudyBunnies", context),
+        appBar: mainappbar(
+          "Users",
+          "This page contains all information for the users registered in StudyBunnies",
+          context,
+        ),
         bottomNavigationBar: navbar(1),
-        drawer: adminDrawer(context, 3),
+        drawer: const AdminDrawer(initialIndex: 3),
         body: Padding(
           padding: EdgeInsets.only(left: 5.w, top: 1.5.h, right: 5.w),
           child: Column(
@@ -176,19 +204,17 @@ class _UserlistState extends State<Userlist> {
 
                     users.sort((a, b) => a['username'].compareTo(b['username']));
 
-                  if (users.isEmpty) {
-                    return Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'images/norecord.png', 
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                    if (users.isEmpty) {
+                      return Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('images/norecord.png'), 
+                          ],
+                        ),
+                      );
+                    }
 
                     return ListView.builder(
                       itemCount: users.length,
@@ -212,7 +238,7 @@ class _UserlistState extends State<Userlist> {
                             child: Row(
                               children: [
                                 CircleAvatar(
-                                  backgroundImage: user['profile_img'] != ""
+                                  backgroundImage: user['profile_img'] != "" && user['profile_img'] != null
                                       ? NetworkImage(user['profile_img'])
                                       : const AssetImage('images/profile.webp') as ImageProvider,
                                   radius: 7.w,

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
@@ -9,6 +10,7 @@ import 'package:studybunnies/adminwidgets/bottomnav.dart';
 import 'package:studybunnies/adminwidgets/buildGiftsGridView.dart';
 import 'package:studybunnies/adminwidgets/buildHistoryListView.dart';
 import 'package:studybunnies/adminwidgets/drawer.dart';
+import 'package:studybunnies/authentication/session.dart';
 
 class Giftlist extends StatefulWidget {
   const Giftlist({super.key});
@@ -18,8 +20,31 @@ class Giftlist extends StatefulWidget {
 }
 
 class _GiftlistState extends State<Giftlist> {
-  int selectedIndex = 0; // Track the selected index
-  TextEditingController mycontroller = TextEditingController();
+  final Session session = Session();
+  String? userId;
+  String? userName;
+  String? profileImage;
+  int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    userId = await session.getUserId();
+    if (userId != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId!).get();
+      if (userDoc.exists) {
+        setState(() {
+          userName = userDoc['username'];
+          profileImage = userDoc['profileImage'];
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -53,7 +78,7 @@ class _GiftlistState extends State<Giftlist> {
           "This section includes the list of gifts that can be redeemed by the students.",
           context,
         ),
-        drawer: adminDrawer(context, 4),
+        drawer: const AdminDrawer(initialIndex: 4),
         bottomNavigationBar: navbar(4),
         body: Padding(
           padding: EdgeInsets.only(left: 3.w, right: 3.w, top: 0.h),
@@ -62,82 +87,49 @@ class _GiftlistState extends State<Giftlist> {
             children: [
               Padding(
                 padding: EdgeInsets.only(left: 25.w, top: 2.h),
-                child:ToggleButtons(
-                highlightColor: Colors.transparent,
-                textStyle: const TextStyle(fontFamily: 'Roboto'),
-                constraints: BoxConstraints(minWidth: 2.w, minHeight: 3.h),
-                isSelected: [selectedIndex == 0, selectedIndex == 1],
-                borderColor: Colors.transparent,
-                selectedBorderColor: Colors.transparent,
-                onPressed: (index) {
-                  setState(() {
-                    selectedIndex = index; 
-                  });
-                },
-                selectedColor: Colors.black,
-                fillColor: Colors.transparent,
-                borderWidth: 0.0,
-                children: <Widget>[
-                  buildToggleButton('Gifts', 0),
-                  buildToggleButton('History', 1),
-                ],
-              ),
-              ),
-
-              SizedBox(height:2.h),
-
-            Padding(
-              padding: EdgeInsets.only(left:4.w, right: 4.w),
-            child: Container( 
-              padding: EdgeInsets.all(1.w),
-              width: 90.w,
-              decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: Colors.grey),
-            ),
-              child:Row(
-                  children: [
-                    SizedBox(width: 2.0.w),
-                    const Icon(Icons.search),
-                    SizedBox(width: 2.0.w),
-                    Expanded(
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          hintText: 'Search',
-                          border: InputBorder.none,
-                        ),
-                        // Add your controller and onChanged callback here
-                        controller: mycontroller,
-                        onChanged: (value) {
-                          // Implement your search logic here
-                        },
-                      ),
-                    ),
+                child: ToggleButtons(
+                  highlightColor: Colors.transparent,
+                  textStyle: const TextStyle(fontFamily: 'Roboto'),
+                  constraints: BoxConstraints(minWidth: 2.w, minHeight: 3.h),
+                  isSelected: [selectedIndex == 0, selectedIndex == 1],
+                  borderColor: Colors.transparent,
+                  selectedBorderColor: Colors.transparent,
+                  onPressed: (index) {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  selectedColor: Colors.black,
+                  fillColor: Colors.transparent,
+                  borderWidth: 0.0,
+                  children: <Widget>[
+                    buildToggleButton('Gifts', 0),
+                    buildToggleButton('History', 1),
                   ],
                 ),
-            ),              
-            ),
+              ),
               SizedBox(height: 3.h),
-
-              selectedIndex == 0 ? buildGiftsGridView() : buildHistoryListView(),
+              selectedIndex == 0 ? const GiftsGridView() : const HistoryListView(),
             ],
           ),
         ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-        Navigator.push(
-          context, PageTransition(
-          type: PageTransitionType.rightToLeft,
-            duration: const Duration(milliseconds: 305),  
-            child: const Addgift(),
-          ),
-        ); 
-          // Add your action here
-        },
-        backgroundColor: const Color.fromARGB(255, 100, 30, 30), 
-        shape: const CircleBorder(), 
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+        floatingActionButton: selectedIndex == 0
+            ? FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      duration: const Duration(milliseconds: 305),
+                      child: const Addgift(),
+                    ),
+                  );
+                },
+                backgroundColor: const Color.fromARGB(255, 100, 30, 30),
+                shape: const CircleBorder(),
+                child: const Icon(Icons.add, color: Colors.white),
+              )
+            : null,
       ),
     );
   }

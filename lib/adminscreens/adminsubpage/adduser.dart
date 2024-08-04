@@ -276,12 +276,11 @@ class _AdduserState extends State<Adduser> {
                       labelText: 'E-mail',
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please Enter an Email Address';
-                      }
-                      else if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value)) {
-                        return 'Please Enter a Valid Email Address';
-                      }
+                          if (value == null || value.isEmpty) {
+                            return 'Please Enter an Email Address';
+                          } else if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[cC][oO][mM]$').hasMatch(value)) {
+                            return 'Please Enter a Valid Email Address ending with .com';
+                          }
                       return null;
                       },
                   ),

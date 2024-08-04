@@ -44,7 +44,6 @@ class _MyProfileState extends State<MyProfile> {
       setState(() {
         _pickedImagePath = pickedFile.path;
       });
-      print('Picked image path: ${pickedFile.path}');
     }
   }
 

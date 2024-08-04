@@ -84,7 +84,7 @@ class _LoginscreenState extends State<Loginscreen> {
           } else if (role == 'Student' && mounted) {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Splashscreen(userrole: role)));
           } else {
-            _showErrorDialog('Unknown role! Error in Records');
+            _showErrorDialog('Your Record has Been Deleted !');
           }
         }
       } catch (e) {

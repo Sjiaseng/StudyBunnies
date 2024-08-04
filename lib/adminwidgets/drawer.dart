@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
@@ -12,39 +12,111 @@ import 'package:studybunnies/adminscreens/giftcatalogue.dart';
 import 'package:studybunnies/adminscreens/myprofile.dart';
 import 'package:studybunnies/adminscreens/timetable.dart';
 import 'package:studybunnies/adminscreens/users.dart';
+import 'package:studybunnies/authentication/session.dart';
 
-Widget adminDrawer(BuildContext context, int drawercurrentindex) {
-  String formattedDate = DateFormat('dd-MM-yyyy (E)').format(DateTime.now());
-  TextStyle selectedStyle = TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color:const Color.fromRGBO(195, 154, 29, 1));
-  TextStyle normalStyle = TextStyle(fontSize: 12.sp, color: Colors.white);
-  Color selectedIconColor = const Color.fromRGBO(195, 154, 29, 1); 
-  Color unselectedIconColor = Colors.white; 
-  Color selectedContainerColor = Colors.yellow.withOpacity(0.2);
-  Color unselectedContainerColor = Colors.transparent;
-  return Drawer(
-    backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
-    child: ListView(
-      padding: EdgeInsets.zero,
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.all(4.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(left: 2.w),
-                child: Text(
-                  formattedDate,
-                  style: TextStyle(
-                    fontSize: 10.sp,
-                    color: Colors.grey[600],
+class AdminDrawer extends StatefulWidget {
+  final int initialIndex;
+  const AdminDrawer({super.key, required this.initialIndex});
+
+  @override
+  State<AdminDrawer> createState() => _AdminDrawerState();
+}
+
+class _AdminDrawerState extends State<AdminDrawer> {
+  late int _currentIndex;
+  final Session session = Session();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData2();
+    _currentIndex = widget.initialIndex;
+    
+  }
+  String? newuserId;
+  String? newuserName;
+  String? newprofileImage;
+
+  Future<void> _fetchUserData2() async {
+    try {
+      // Get the user ID from the session
+      newuserId = await session.getUserId();
+      if (newuserId == null) {
+        print('User ID is null.');
+        return;
+      }
+
+      // Fetch user document from Firestore
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(newuserId!).get();
+      if (!userDoc.exists) {
+        print('User document does not exist.');
+        return;
+      }
+
+      // Update state with fetched data
+      setState(() {
+        newuserName = userDoc.get('username');
+        newprofileImage = userDoc.get('profile_img');
+      });
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
+
+  void _onDrawerItemTapped(int index, Widget page) {
+    setState(() {
+      _currentIndex = index;
+    });
+
+    Navigator.pop(context);
+    Timer(const Duration(milliseconds: 205), () {
+      Navigator.push(
+        context,
+        PageTransition(
+          type: PageTransitionType.rightToLeft,
+          duration: const Duration(milliseconds: 205),
+          child: page,
+        ),
+      );
+    });
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    String formattedDate = DateFormat('dd-MM-yyyy (E)').format(DateTime.now());
+    TextStyle selectedStyle = TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: const Color.fromRGBO(195, 154, 29, 1));
+    TextStyle normalStyle = TextStyle(fontSize: 12.sp, color: Colors.white);
+    Color selectedIconColor = const Color.fromRGBO(195, 154, 29, 1);
+    Color unselectedIconColor = Colors.white;
+    Color selectedContainerColor = Colors.yellow.withOpacity(0.2);
+    Color unselectedContainerColor = Colors.transparent;
+
+    return Drawer(
+      backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(4.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 2.w),
+                  child: Text(
+                    formattedDate,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 7.h,
-              ),
-              Padding(
+                SizedBox(
+                  height: 7.h,
+                ),
+             Padding(
                 padding: EdgeInsets.only(left: 7.w),
                 child: Container(
                   width: 20.w,
@@ -52,334 +124,185 @@ Widget adminDrawer(BuildContext context, int drawercurrentindex) {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.grey[300],
-                  ),
-                  child: Icon(
-                    Icons.person,
-                    size: 10.w,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              SizedBox(height: 2.h),
-              Padding(
-                padding: EdgeInsets.only(left: 7.w),
-                child: Text(
-                  'John Doe',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    image: DecorationImage(
+                      image: newprofileImage != null && newprofileImage != ""
+                          ? NetworkImage(newprofileImage!)
+                          : const AssetImage('images/profile.webp'),
+                      fit: BoxFit.cover,  
+                    ),
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 7.w),
-                child: Text(
-                  'ID: 123456789',
-                  style: TextStyle(
-                    fontSize: 10.sp,
-                    fontFamily: 'Roboto',
-                    color: Colors.grey[600],
+                SizedBox(height: 2.h),
+                Padding(
+                  padding: EdgeInsets.only(left: 7.w),
+                  child: Text(
+                    '$newuserName',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.only(left: 7.w),
+                  child: Text(
+                    'ID: $newuserId',
+                    style: TextStyle(
+                      fontSize: 9.sp,
+                      fontFamily: 'Roboto',
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              _buildDrawerItem(
+                index: 0,
+                icon: Icons.home,
+                text: 'Home',
+                page: const AdminDashboard(),
+                selectedIconColor: selectedIconColor,
+                unselectedIconColor: unselectedIconColor,
+                selectedStyle: selectedStyle,
+                normalStyle: normalStyle,
+                selectedContainerColor: selectedContainerColor,
+                unselectedContainerColor: unselectedContainerColor,
+              ),
+              _buildDrawerItem(
+                index: 1,
+                icon: Icons.table_chart,
+                text: 'Timetable',
+                page: const Timetablelist(),
+                selectedIconColor: selectedIconColor,
+                unselectedIconColor: unselectedIconColor,
+                selectedStyle: selectedStyle,
+                normalStyle: normalStyle,
+                selectedContainerColor: selectedContainerColor,
+                unselectedContainerColor: unselectedContainerColor,
+              ),
+              _buildDrawerItem(
+                index: 2,
+                icon: Icons.class_,
+                text: 'Classes',
+                page: const Classlist(),
+                selectedIconColor: selectedIconColor,
+                unselectedIconColor: unselectedIconColor,
+                selectedStyle: selectedStyle,
+                normalStyle: normalStyle,
+                selectedContainerColor: selectedContainerColor,
+                unselectedContainerColor: unselectedContainerColor,
+              ),
+              _buildDrawerItem(
+                index: 3,
+                icon: Icons.person,
+                text: 'Users',
+                page: const Userlist(),
+                selectedIconColor: selectedIconColor,
+                unselectedIconColor: unselectedIconColor,
+                selectedStyle: selectedStyle,
+                normalStyle: normalStyle,
+                selectedContainerColor: selectedContainerColor,
+                unselectedContainerColor: unselectedContainerColor,
+              ),
+              _buildDrawerItem(
+                index: 4,
+                icon: Icons.card_giftcard_rounded,
+                text: 'Gift Catalogue',
+                page: const Giftlist(),
+                selectedIconColor: selectedIconColor,
+                unselectedIconColor: unselectedIconColor,
+                selectedStyle: selectedStyle,
+                normalStyle: normalStyle,
+                selectedContainerColor: selectedContainerColor,
+                unselectedContainerColor: unselectedContainerColor,
+              ),
+              _buildDrawerItem(
+                index: 5,
+                icon: Icons.autorenew_rounded,
+                text: 'Feedback',
+                page: const Feedbacklist(),
+                selectedIconColor: selectedIconColor,
+                unselectedIconColor: unselectedIconColor,
+                selectedStyle: selectedStyle,
+                normalStyle: normalStyle,
+                selectedContainerColor: selectedContainerColor,
+                unselectedContainerColor: unselectedContainerColor,
+              ),
+              _buildDrawerItem(
+                index: 6,
+                icon: Icons.person_pin,
+                text: 'My Profile',
+                page: const MyProfile(),
+                selectedIconColor: selectedIconColor,
+                unselectedIconColor: unselectedIconColor,
+                selectedStyle: selectedStyle,
+                normalStyle: normalStyle,
+                selectedContainerColor: selectedContainerColor,
+                unselectedContainerColor: unselectedContainerColor,
+              ),
+              _buildDrawerItem(
+                index: 7,
+                icon: Icons.warning,
+                text: 'FAQ',
+                page: const Faqpage(),
+                selectedIconColor: selectedIconColor,
+                unselectedIconColor: unselectedIconColor,
+                selectedStyle: selectedStyle,
+                normalStyle: normalStyle,
+                selectedContainerColor: selectedContainerColor,
+                unselectedContainerColor: unselectedContainerColor,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required int index,
+    required IconData icon,
+    required String text,
+    required Widget page,
+    required Color selectedIconColor,
+    required Color unselectedIconColor,
+    required TextStyle selectedStyle,
+    required TextStyle normalStyle,
+    required Color selectedContainerColor,
+    required Color unselectedContainerColor,
+  }) {
+    return Container(
+      color: _currentIndex == index
+          ? selectedContainerColor
+          : unselectedContainerColor,
+      child: ListTile(
+        title: Padding(
+          padding: EdgeInsets.only(left: 5.w),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: _currentIndex == index
+                    ? selectedIconColor
+                    : unselectedIconColor,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                text,
+                style: _currentIndex == index ? selectedStyle : normalStyle,
               ),
             ],
           ),
         ),
-          Column(
-            children: [
-              Container(
-                color: drawercurrentindex == 0
-                    ? selectedContainerColor
-                    : unselectedContainerColor,
-                child: ListTile(
-                  title: Padding(
-                    padding: EdgeInsets.only(left: 5.w), // Add padding to the text
-                    child: Row( 
-                      children:[
-                        Icon(
-                          Icons.home,
-                          color: drawercurrentindex == 0 ? selectedIconColor : unselectedIconColor,
-                          ),
-                        const SizedBox(width:10),
-                        Text(
-                          'Home',
-                          style: drawercurrentindex == 0 ? selectedStyle : normalStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  selected: drawercurrentindex == 0,
-                  onTap: (){
-                   Navigator.pop(context);
-                   Timer(const Duration(milliseconds: 205), () {
-                    Navigator.push(
-                      context, PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        duration: const Duration(milliseconds: 205),  
-                        child: const AdminDashboard()
-                      )
-                    );    
-                   });
-                  }                
-                ),
-              ),
-              Container(
-                color: drawercurrentindex == 1
-                    ? selectedContainerColor
-                    : unselectedContainerColor,
-                child: ListTile(
-                  title: Padding(
-                    padding: EdgeInsets.only(left: 5.w), // Add padding to the text
-                    child: Row( 
-                      children:[
-                        Icon(
-                          Icons.table_chart,
-                          color: drawercurrentindex == 1 ? selectedIconColor : unselectedIconColor,
-                          ),
-                        const SizedBox(width:10),
-                        Text(
-                          'Timetable',
-                          style: drawercurrentindex == 1 ? selectedStyle : normalStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  selected: drawercurrentindex == 1,
-                  onTap: (){
-                   Navigator.pop(context);
-                   Timer(const Duration(milliseconds: 205), () {
-                    Navigator.push(
-                      context, PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        duration: const Duration(milliseconds: 205),  
-                        child: const Timetablelist()
-                      )
-                    );    
-                   });
-                  } 
-                ),
-              ),
-              Container(
-                color: drawercurrentindex == 2
-                    ? selectedContainerColor
-                    : unselectedContainerColor,
-                child: ListTile(
-                  title: Padding(
-                    padding: EdgeInsets.only(left: 5.w), // Add padding to the text
-                    child: Row( 
-                      children:[
-                        Icon(
-                          Icons.class_,
-                          color: drawercurrentindex == 2 ? selectedIconColor : unselectedIconColor,
-                          ),
-                        const SizedBox(width:10),
-                        Text(
-                          'Classes',
-                          style: drawercurrentindex == 2 ? selectedStyle : normalStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  selected: drawercurrentindex == 2,
-                  onTap: (){
-                   Navigator.pop(context);
-                   Timer(const Duration(milliseconds: 205), () {
-                    Navigator.push(
-                      context, PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        duration: const Duration(milliseconds: 205),  
-                        child: const Classlist()
-                      )
-                    );    
-                   });
-                  }   
-                ),
-              ),
-              Container(
-                color: drawercurrentindex == 3
-                    ? selectedContainerColor
-                    : unselectedContainerColor,
-                child: ListTile(
-                  title: Padding(
-                    padding: EdgeInsets.only(left: 5.w), 
-                    child: Row( 
-                      children:[
-                        Icon(
-                          Icons.person,
-                          color: drawercurrentindex == 3 ? selectedIconColor : unselectedIconColor,
-                          ),
-                        const SizedBox(width:10),
-                        Text(
-                          'Users',
-                          style: drawercurrentindex == 3 ? selectedStyle : normalStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  selected: drawercurrentindex == 3,
-                  onTap: (){
-                   Navigator.pop(context);
-                   Timer(const Duration(milliseconds: 205), () {
-                    Navigator.push(
-                      context, PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        duration: const Duration(milliseconds: 205),  
-                        child: const Userlist()
-                      )
-                    );    
-                   });
-                  }   
-                ),
-              ),
-              Container(
-                color: drawercurrentindex == 4
-                    ? selectedContainerColor
-                    : unselectedContainerColor,
-                child: ListTile(
-                  title: Padding(
-                    padding: EdgeInsets.only(left: 5.w), 
-                    child: Row( 
-                      children:[
-                        Icon(
-                          Icons.card_giftcard_rounded,
-                          color: drawercurrentindex == 4 ? selectedIconColor : unselectedIconColor,
-                          ),
-                        const SizedBox(width:10),
-                        Text(
-                          'Gift Catalogue',
-                          style: drawercurrentindex == 4 ? selectedStyle : normalStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  selected: drawercurrentindex == 4,
-                  onTap: (){
-                   Navigator.pop(context);
-                   Timer(const Duration(milliseconds: 205), () {
-                    Navigator.push(
-                      context, PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        duration: const Duration(milliseconds: 205),  
-                        child: const Giftlist()
-                      )
-                    );    
-                   });
-                  }   
-                ),
-              ),
-              Container(
-                color: drawercurrentindex == 5
-                    ? selectedContainerColor
-                    : unselectedContainerColor,
-                child: ListTile(
-                  title: Padding(
-                    padding: EdgeInsets.only(left: 5.w), // Add padding to the text
-                    child: Row( 
-                      children:[
-                        Icon(
-                          Icons.autorenew_rounded,
-                          color: drawercurrentindex == 5 ? selectedIconColor : unselectedIconColor,
-                          ),
-                        const SizedBox(width:10),
-                        Text(
-                          'Feedback',
-                          style: drawercurrentindex == 5 ? selectedStyle : normalStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  selected: drawercurrentindex == 5,
-                  onTap: (){
-                   Navigator.pop(context);
-                   Timer(const Duration(milliseconds: 205), () {
-                    Navigator.push(
-                      context, PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        duration: const Duration(milliseconds: 205),  
-                        child: const Feedbacklist()
-                      )
-                    );    
-                   });
-                  }                
-                ),
-              ),
-              Container(
-                color: drawercurrentindex == 6
-                    ? selectedContainerColor
-                    : unselectedContainerColor,
-                child: ListTile(
-                  title: Padding(
-                    padding: EdgeInsets.only(left: 5.w), 
-                    child: Row( 
-                      children:[
-                        Icon(
-                          Icons.person_pin,
-                          color: drawercurrentindex == 6 ? selectedIconColor : unselectedIconColor,
-                          ),
-                        const SizedBox(width:10),
-                        Text(
-                          'My Profile',
-                          style: drawercurrentindex == 6 ? selectedStyle : normalStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  selected: drawercurrentindex == 6,
-                  onTap: (){
-                   Navigator.pop(context);
-                   Timer(const Duration(milliseconds: 205), () {
-                    Navigator.push(
-                      context, PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        duration: const Duration(milliseconds: 305),  
-                        child: const MyProfile()
-                      )
-                    );    
-                   });
-                  }                   
-                ),
-              ),
-              Container(
-                color: drawercurrentindex == 7
-                    ? selectedContainerColor
-                    : unselectedContainerColor,
-                child: ListTile(
-                  title: Padding(
-                    padding: EdgeInsets.only(left: 5.w), 
-                    child: Row( 
-                      children:[
-                        Icon(
-                          Icons.warning,
-                          color: drawercurrentindex == 7 ? selectedIconColor : unselectedIconColor,
-                          ),
-                        const SizedBox(width:10),
-                        Text(
-                          'FAQ',
-                          style: drawercurrentindex == 7 ? selectedStyle : normalStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  selected: drawercurrentindex == 7,
-                  onTap: (){
-                   Navigator.pop(context);
-                   Timer(const Duration(milliseconds: 205), () {
-                    Navigator.push(
-                      context, PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        duration: const Duration(milliseconds: 305),  
-                        child: const Faqpage()
-                      )
-                    );    
-                   });
-                  }                   
-                ),
-              ),
-            ],
-          ),
-      ],
-    ),
-  );
+        selected: _currentIndex == index,
+        onTap: () => _onDrawerItemTapped(index, page),
+      ),
+    );
+  }
 }

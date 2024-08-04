@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
@@ -80,7 +79,6 @@ class _EdituserState extends State<Edituser> {
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final usersCollection = FirebaseFirestore.instance.collection('users');
-      final auth = FirebaseAuth.instance;
 
       try {
         String profileImageUrl = '';
@@ -100,7 +98,7 @@ class _EdituserState extends State<Edituser> {
           final userDoc = await FirebaseFirestore.instance.collection('users').doc(widget.userID).get();
           if (userDoc.exists) {
             final data = userDoc.data()!;
-            profileImageUrl = data['profile_img'] ?? ''; // Retain existing URL
+            profileImageUrl = data['profile_img'] ?? ''; 
           }
         }
 
@@ -115,20 +113,6 @@ class _EdituserState extends State<Edituser> {
           'profile_img': profileImageUrl,
         });
 
-        // Update email
-        User? user = auth.currentUser;
-        if (user != null && user.uid == widget.userID) {
-          if (_emailController.text.isNotEmpty) {
-            try {
-              await user.verifyBeforeUpdateEmail(_emailController.text);
-            } catch (e) {
-              print('Error sending email verification: $e');
-            }
-          }
-        } else {
-          print('User is null or UID does not match');
-        }
-
         if (mounted) {
           showTopSnackBar(
             context,
@@ -136,7 +120,6 @@ class _EdituserState extends State<Edituser> {
             backgroundColor: Colors.green,
             textColor: Colors.white,
           );
-          Navigator.pop(context);
         }
       } catch (e) {
         print('Error during form submission: $e');
@@ -161,42 +144,48 @@ class _EdituserState extends State<Edituser> {
     }
   }
 
-Future<void> _deleteUser() async {
-  final auth = FirebaseAuth.instance;
 
+ Future<void> _deleteUser() async {
   try {
-    // Proceed with deletion
+    // Fetch user document from Firestore
     final userDoc = await FirebaseFirestore.instance.collection('users').doc(widget.userID).get();
     if (userDoc.exists) {
       final data = userDoc.data()!;
       final imagePath = data['profile_img'];
 
-      // Only attempt to delete if the imagePath is valid
+      // Delete profile image if it exists
       if (imagePath != null && imagePath.isNotEmpty) {
         final storageRef = FirebaseStorage.instance.refFromURL(imagePath);
         await storageRef.delete();
       }
-    }
 
-    // Delete the user document from Firestore
-    await FirebaseFirestore.instance.collection('users').doc(widget.userID).delete();
+      // Delete user document from Firestore
+      await FirebaseFirestore.instance.collection('users').doc(widget.userID).delete();
 
-    // Delete user from Firebase Authentication
-    User? user = auth.currentUser;
-    if (user != null && user.uid == widget.userID) {
-      await user.delete();
-    }
-
-    if (mounted) {
-      showTopSnackBar(
-        context,
-        'User Deleted Successfully!',
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
-      Navigator.pop(context);
+      // Show success message and pop the context if mounted
+      if (mounted) {
+        showTopSnackBar(
+          context,
+          'User Deleted Successfully!',
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+        Navigator.pop(context);
+      }
+    } else {
+      // Handle case where user document does not exist
+      print('User document not found.');
+      if (mounted) {
+        showTopSnackBar(
+          context,
+          'User not found!',
+          backgroundColor: const Color.fromARGB(255, 246, 77, 65),
+          textColor: Colors.white,
+        );
+      }
     }
   } catch (e) {
+    // Handle errors and show failure message if mounted
     print('Error during user deletion: $e');
     if (mounted) {
       showTopSnackBar(
@@ -208,6 +197,7 @@ Future<void> _deleteUser() async {
     }
   }
 }
+
 
   @override
   void dispose() {
@@ -354,18 +344,17 @@ Future<void> _deleteUser() async {
                     SizedBox(height: 2.h),
                   TextFormField(
                     controller: _emailController,
-                    enabled: _selectedRole == 'Admin' ? false : true,
+                    enabled: false,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
                       labelText: 'E-mail',
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please Enter an Email Address';
-                      }
-                      else if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value)) {
-                        return 'Please Enter a Valid Email Address';
-                      }
+                          if (value == null || value.isEmpty) {
+                            return 'Please Enter an Email Address';
+                          } else if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[cC][oO][mM]$').hasMatch(value)) {
+                            return 'Please Enter a Valid Email Address ending with .com';
+                          }
                       return null;
                       },
                   ),
@@ -439,9 +428,7 @@ Future<void> _deleteUser() async {
                     SizedBox(height: 2.h),
 
                     DropdownSearch<String>(
-                      items: _selectedRole == 'Admin' 
-                        ? const <String>['Student', 'Teacher', 'Admin'] 
-                        : const <String>['Student', 'Teacher'],
+                      items: _selectedRole != 'Admin' ? <String>['Student', 'Teacher'] :  <String>['Student', 'Teacher', 'Admin'],
                       enabled: _selectedRole != 'Admin', 
                       dropdownDecoratorProps: DropDownDecoratorProps(
                         dropdownSearchDecoration: InputDecoration(
@@ -466,8 +453,6 @@ Future<void> _deleteUser() async {
                           // Disable 'Admin' item in the dropdown
                           return ListTile(
                             title: Text(item),
-                            enabled: item != 'Admin', // Disable 'Admin' item in the list
-                            tileColor: item == 'Admin' ? Colors.grey[200] : null, // Optionally style the disabled item
                           );
                         },
                       ),
@@ -483,7 +468,7 @@ Future<void> _deleteUser() async {
                     SizedBox(height: 4.h),
 
                     ElevatedButton(
-                      onPressed: _selectedRole == 'Admin' ? null : null,//_submitForm,
+                      onPressed: _selectedRole == 'Admin' ? null : _submitForm,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 2.h),
@@ -503,7 +488,7 @@ Future<void> _deleteUser() async {
                     SizedBox(height: 2.h),
 
                     ElevatedButton(
-                      onPressed: _selectedRole == 'Admin' ? null : _deleteUser,
+                      onPressed: _deleteUser,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 2.h),

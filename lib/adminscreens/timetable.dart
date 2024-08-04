@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
@@ -8,15 +9,39 @@ import 'package:studybunnies/adminwidgets/appbar.dart';
 import 'package:studybunnies/adminwidgets/bottomnav.dart';
 import 'package:studybunnies/adminwidgets/drawer.dart';
 import 'package:studybunnies/adminwidgets/timetable.dart';
+import 'package:studybunnies/authentication/session.dart';
 
 class Timetablelist extends StatefulWidget {
-  const Timetablelist({Key? key}) : super(key: key);
+  const Timetablelist({super.key});
 
   @override
   State<Timetablelist> createState() => _TimetablelistState();
 }
 
 class _TimetablelistState extends State<Timetablelist> {
+  final Session session = Session();
+  String? userId;
+  String? userName;
+  String? profileImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    userId = await session.getUserId();
+    if (userId != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId!).get();
+      if (userDoc.exists) {
+        setState(() {
+          userName = userDoc['username'];
+          profileImage = userDoc['profileImage'];
+        });
+      }
+    }
+  }
   List<String> items = ['Option 1', 'Option 2', 'Option 3'];
   String? selectedItem = 'Option 1';
 
@@ -78,7 +103,7 @@ class _TimetablelistState extends State<Timetablelist> {
           context,
         ),
         bottomNavigationBar: navbar(0),
-        drawer: adminDrawer(context, 1),
+        drawer: const AdminDrawer(initialIndex: 1),
         body: Padding(
           padding: EdgeInsets.only(left: 5.w, right: 5.w, top: 2.h),
           child: Column(
