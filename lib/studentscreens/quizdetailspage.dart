@@ -8,17 +8,17 @@ import 'package:studybunnies/studentwidgets/appbar.dart';
 import 'package:studybunnies/studentwidgets/bottomnav.dart';
 import 'package:studybunnies/studentwidgets/drawer.dart';
 
-class Classdetails extends StatefulWidget {
+class QuizDetailsPage extends StatefulWidget {
   final String className;
   final String classID;
 
-  const Classdetails({super.key, required this.className, required this.classID});
+  const QuizDetailsPage({super.key, required this.className, required this.classID, required String quizTitle});
 
   @override
-  State<Classdetails> createState() => _ClassdetailsState();
+  State<QuizDetailsPage> createState() => _ClassdetailsState();
 }
 
-class _ClassdetailsState extends State<Classdetails> {
+class _ClassdetailsState extends State<QuizDetailsPage> {
   final TextEditingController _searchNotesController = TextEditingController();
   
   List<String> _notes = [];

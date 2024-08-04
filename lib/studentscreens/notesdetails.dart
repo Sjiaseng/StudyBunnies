@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 
 class NotesDetailsPage extends StatefulWidget {
-  const NotesDetailsPage(
-      {super.key, required this.className, required this.chapterName});
+  const NotesDetailsPage({
+    super.key,
+    required this.className,
+    required this.chapterName,
+    required this.classID,
+    required this.noteTitle,
+  });
 
   final String className; // Class name passed from previous page
   final String chapterName; // Chapter name passed from previous page
+  final String classID; // Class ID
+  final String noteTitle; // Note title
 
   @override
   _NotesDetailsPageState createState() => _NotesDetailsPageState();
@@ -73,7 +80,7 @@ class _NotesDetailsPageState extends State<NotesDetailsPage> {
                       const Text(
                           'These are the notes for the class.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum'),
                       const SizedBox(
-                        height: 16.0, // Spacing between notes and images
+                        height: 16.0, // Spacing between sections
                       ),
                       const Text(
                         'Images:', // Section title for images
@@ -243,17 +250,16 @@ class _NotesDetailsPageState extends State<NotesDetailsPage> {
                                               child: TextField(
                                                 decoration: InputDecoration(
                                                   hintText:
-                                                      'Reply', // Placeholder text for reply field
-                                                  border: InputBorder
-                                                      .none, // No border for text field
+                                                      'Add a reply...', // Placeholder text for reply field
                                                 ),
                                               ),
                                             ),
                                             IconButton(
-                                              onPressed:
-                                                  () {}, // Handle reply button press
-                                              icon: const Icon(Icons
-                                                  .send), // Reply button icon
+                                              icon: const Icon(
+                                                  Icons.send), // Send icon
+                                              onPressed: () {
+                                                // Add reply logic here
+                                              },
                                             ),
                                           ],
                                         ),
@@ -267,58 +273,34 @@ class _NotesDetailsPageState extends State<NotesDetailsPage> {
                         ),
                       ),
                     ],
+                    Padding(
+                      padding: const EdgeInsets.all(8.0), // Padding inside the comment input container
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _newCommentController,
+                              decoration: const InputDecoration(
+                                hintText: 'Add a new comment...',
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.send),
+                            onPressed: () {
+                              // Add new comment logic here
+                              setState(() {
+                                _comments.add(_newCommentController.text);
+                                _newCommentController.clear();
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-
-              if (_commentsExpanded) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0), // Padding around the new comment field
-                  child: Container(
-                    padding: const EdgeInsets.all(
-                        8.0), // Padding inside the container
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        // Border color
-                        color: const Color.fromRGBO(217, 217, 217, 1),
-                        width: 1.0,
-                      ),
-                      borderRadius:
-                          BorderRadius.circular(8.0), // Rounded corners
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller:
-                                _newCommentController, // Controller to manage new comment input
-                            decoration: const InputDecoration(
-                              hintText:
-                                  'Add new comment', // Placeholder text for new comment field
-                              border:
-                                  InputBorder.none, // No border for text field
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              if (_newCommentController.text.isNotEmpty) {
-                                _comments.add(_newCommentController
-                                    .text); // Add new comment to the list
-                                _newCommentController
-                                    .clear(); // Clear the text field
-                              }
-                            });
-                          },
-                          icon: const Icon(Icons.send), // Send button icon
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
             ],
           ),
         ),

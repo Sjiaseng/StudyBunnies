@@ -6,6 +6,8 @@ import 'package:studybunnies/studentscreens/giftcatalogue.dart';
 import 'package:studybunnies/studentwidgets/appbar.dart';
 import 'package:studybunnies/studentwidgets/bottomnav.dart';
 import 'package:studybunnies/studentwidgets/drawer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Classlist extends StatefulWidget {
   const Classlist({super.key});
@@ -16,15 +18,15 @@ class Classlist extends StatefulWidget {
 
 class _ClasslistState extends State<Classlist> {
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _classes =
-      List<String>.generate(10, (index) => 'Class ${index + 1}');
+  final FlutterSecureStorage storage = FlutterSecureStorage();
+  List<String> _classes = [];
   List<String> _filteredClasses = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredClasses = List.from(_classes);
     _searchController.addListener(_filterClasses);
+    _fetchClasses(); // Load classes from Firestore
   }
 
   @override
@@ -36,16 +38,61 @@ class _ClasslistState extends State<Classlist> {
 
   void _filterClasses() {
     final query = _searchController.text.toLowerCase();
-    if (query.isEmpty) {
-      setState(() {
-        _filteredClasses = List.from(_classes);
-      });
-    } else {
-      setState(() {
-        _filteredClasses = _classes
-            .where((className) => className.toLowerCase().contains(query))
-            .toList();
-      });
+    setState(() {
+      _filteredClasses = query.isEmpty
+          ? List.from(_classes)
+          : _classes.where((className) => className.toLowerCase().contains(query)).toList();
+    });
+  }
+
+  Future<void> _fetchClasses() async {
+    final userID = await storage.read(key: 'userID');
+
+    if (userID == null) {
+      print('User ID is null');
+      return;
+    }
+
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('classes')
+          .where('student', arrayContains: userID)
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        print('No classes found for userID $userID');
+      } else {
+        print('Classes found for userID $userID: ${snapshot.docs.length}');
+        setState(() {
+          _classes = snapshot.docs.map((doc) {
+            final classname = doc['classname'] as String;
+            print('Mapping class: $classname');
+            return classname;
+          }).toList();
+          _filteredClasses = List.from(_classes);
+        });
+      }
+    } catch (e) {
+      print('Error fetching classes: $e');
+    }
+  }
+
+  Future<String> _fetchClassID(String className) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('classes')
+          .where('classname', isEqualTo: className)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first.id; // Or the field that holds classID
+      } else {
+        throw Exception('Class not found');
+      }
+    } catch (e) {
+      print('Error fetching classID: $e');
+      return '';
     }
   }
 
@@ -53,7 +100,6 @@ class _ClasslistState extends State<Classlist> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onPanUpdate: (details) {
-        // Swiping in right direction.
         if (details.delta.dx > 25) {
           Navigator.push(
             context,
@@ -64,7 +110,6 @@ class _ClasslistState extends State<Classlist> {
             ),
           );
         }
-        // Swiping in left direction.
         if (details.delta.dx < -25) {
           Navigator.push(
             context,
@@ -101,21 +146,19 @@ class _ClasslistState extends State<Classlist> {
                   itemCount: _filteredClasses.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 4.0, // Space outside the card
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: const Color.fromRGBO(217, 217, 217, 1),
-                            width: 1.0, // Border color and width
+                            width: 1.0,
                           ),
-                          borderRadius: BorderRadius.circular(8.0), // Corner radius
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Card(
-                          margin: EdgeInsets.zero, // Remove default margin
+                          margin: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0), // Corner radius for the Card
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
                           color: const Color.fromRGBO(241, 241, 241, 1),
                           child: ListTile(
@@ -125,23 +168,27 @@ class _ClasslistState extends State<Classlist> {
                                 const SizedBox(
                                   width: 100,
                                   child: LinearProgressIndicator(
-                                    value: 0.7, // Example progress value
-                                    backgroundColor: Colors.white, // Background color of progress bar
+                                    value: 0.7,
+                                    backgroundColor: Colors.white,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      Color.fromRGBO(195, 154, 28, 1), // Color of progress bar
+                                      Color.fromRGBO(195, 154, 28, 1),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                            onTap: () {
+                            onTap: () async {
+                              final classID = await _fetchClassID(_filteredClasses[index]);
+
                               Navigator.push(
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
                                   duration: const Duration(milliseconds: 305),
                                   child: Classdetails(
-                                      className: _filteredClasses[index]),
+                                    className: _filteredClasses[index],
+                                    classID: classID,
+                                  ),
                                 ),
                               );
                             },

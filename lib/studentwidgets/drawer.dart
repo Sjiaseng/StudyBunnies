@@ -144,7 +144,7 @@ class StudentDrawer extends StatelessWidget {
                   title: 'Notes',
                   index: 2,
                   selectedIndex: drawercurrentindex,
-                  destination: const Noteslist(),
+                  destination: const Noteslist(classID: '', className: '',),
                 ),
                 _buildDrawerItem(
                   context,

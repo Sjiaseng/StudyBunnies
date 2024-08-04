@@ -9,7 +9,7 @@ import 'package:studybunnies/studentwidgets/drawer.dart';
 
 // StatefulWidget for the Noteslist page
 class Noteslist extends StatefulWidget {
-  const Noteslist({super.key});
+  const Noteslist({super.key, required String classID, required String className});
 
   @override
   State<Noteslist> createState() => _NoteslistState();
@@ -189,7 +189,7 @@ class _NoteslistState extends State<Noteslist> {
                           className:
                               className, // Pass the class name to the details page
                           chapterName: notes[
-                              index], // Pass the chapter name to the details page
+                              index], classID: '', noteTitle: '', // Pass the chapter name to the details page
                         ),
                       ),
                     );
