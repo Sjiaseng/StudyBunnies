@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import 'package:studybunnies/studentscreens/dashboard.dart';
 import 'package:studybunnies/studentwidgets/drawer.dart';
 
 class Faqpage extends StatefulWidget {
@@ -23,25 +24,32 @@ class _FaqpageState extends State<Faqpage> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const StudentDashboard(),
+                      ),
+                    );
                   },
                   child: Container(
                     padding: EdgeInsets.only(left: 7.w, top: 3.h),
                     width: 10.w,
                     height: 10.h,
-                    child: Icon(Icons.arrow_back, size: 20.sp,),
+                    child: Icon(Icons.arrow_back, size: 20.sp),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 35.w, top: 3.h),
-                    child: Text(
-                      'FAQ',
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Roboto',
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 3.h),
+                      child: Text(
+                        'FAQ',
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Roboto',
+                        ),
                       ),
                     ),
                   ),
@@ -49,17 +57,13 @@ class _FaqpageState extends State<Faqpage> {
               ],
             ),
             SizedBox(height: 2.h),
-            
             Container(
               margin: EdgeInsets.only(top: 2.h),
-              padding: EdgeInsets.only(left: 10.w, right: 10.w),
-              
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: ExpansionPanelList(
-                animationDuration: 
-                const Duration(seconds: 1),
+                animationDuration: const Duration(seconds: 1),
                 elevation: 1,
-                
-                dividerColor: Colors.grey, 
+                dividerColor: Colors.grey,
                 children: [
                   _buildExpansionPanel(0, 'Q: What is StudyBunnies?', 'Answer:', 'StudyBunnies is a mobile application that facilitates interactive learning between students and teachers.'),
                   _buildExpansionPanel(1, 'Q: How do I get started?', 'Answer:', 'Download the StudyBunnies app from the [app store](URL play store) or [app store](URL apple app store). Sign up for a free account as a student, teacher, or admin according to your role.'),
@@ -83,38 +87,41 @@ class _FaqpageState extends State<Faqpage> {
     );
   }
 
-ExpansionPanel _buildExpansionPanel(int index, String headerTitle, String bodyTitle, String bodySubtitle) {
-  return ExpansionPanel(
-    canTapOnHeader: true,
-    backgroundColor: Colors.white,
-    headerBuilder: (context, isOpen) {
-      return Container(
+  ExpansionPanel _buildExpansionPanel(int index, String headerTitle, String bodyTitle, String bodySubtitle) {
+    return ExpansionPanel(
+      canTapOnHeader: true,
+      backgroundColor: Colors.white,
+      headerBuilder: (context, isOpen) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          margin: EdgeInsets.only(bottom: 0.75.h, top: 0.75.h),
+          child: ListTile(
+            title: Text(
+              headerTitle,
+              maxLines: 1,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 10.sp,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        );
+      },
+      body: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
         ),
-        margin: EdgeInsets.only(bottom: 0.75.h, top:0.75.h),
+        margin: EdgeInsets.only(bottom: 3.h),
         child: ListTile(
-          title: Text(headerTitle, maxLines: 1, style:TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 10.sp,
-            overflow: TextOverflow.ellipsis,
-          ),
-          ),
+          tileColor: Colors.white,
+          title: Text(bodyTitle),
+          subtitle: Text(bodySubtitle),
         ),
-      );
-    },
-    body: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-        ),
-      margin: EdgeInsets.only(bottom: 3.h),
-      child: ListTile(
-        tileColor:  Colors.white,
-        title: Text(bodyTitle),
-        subtitle: Text(bodySubtitle), 
       ),
-    ),
-    isExpanded: _isOpen[index],
-  );
-}
+      isExpanded: _isOpen[index],
+    );
+  }
 }

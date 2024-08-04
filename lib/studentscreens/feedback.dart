@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:studybunnies/studentscreens/dashboard.dart';
 
 class Feedbacklist extends StatefulWidget {
   const Feedbacklist({super.key});
@@ -11,8 +13,39 @@ class Feedbacklist extends StatefulWidget {
 class _FeedbacklistState extends State<Feedbacklist> {
   String? _selectedReason;
   final TextEditingController _feedbackController = TextEditingController();
+  String? _userRole;
+  String? _userID;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
-  // Method to upload feedback data to Firestore
+  @override
+  void initState() {
+    super.initState();
+    _initializeUserDetails();
+  }
+
+  Future<void> _initializeUserDetails() async {
+    try {
+      // Retrieve userID from the session
+      _userID = await _secureStorage.read(key: 'userID');
+
+      if (_userID != null) {
+        // Fetch user details from Firestore
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(_userID)
+            .get();
+        if (userDoc.exists) {
+          setState(() {
+            _userRole = userDoc
+                .data()?['role']; // Assuming the role field is named 'role'
+          });
+        }
+      }
+    } catch (e) {
+      print('Error retrieving user details: $e');
+    }
+  }
+
   Future<void> _uploadFeedback() async {
     final feedbackCollectionRef =
         FirebaseFirestore.instance.collection('feedback');
@@ -23,6 +56,8 @@ class _FeedbacklistState extends State<Feedbacklist> {
         'generation_date': FieldValue.serverTimestamp(),
         'feedback_title': _selectedReason,
         'feedback_desc': _feedbackController.text,
+        'userID': _userID, // Include the userID in the feedback data
+        'user_role': _userRole, // Include the userRole in the feedback data
       });
 
       // Update the document with the feedbackID as the document ID
@@ -46,7 +81,6 @@ class _FeedbacklistState extends State<Feedbacklist> {
     }
   }
 
-  // Method to validate inputs and call the upload method
   void _validateAndSubmitFeedback() {
     if (_selectedReason == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -80,7 +114,10 @@ class _FeedbacklistState extends State<Feedbacklist> {
             color: Color.fromRGBO(239, 238, 233, 1),
           ),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const StudentDashboard()),
+            );
           },
         ),
         backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
@@ -119,17 +156,13 @@ class _FeedbacklistState extends State<Feedbacklist> {
                 value: _selectedReason,
                 decoration: const InputDecoration(
                   labelText: "Reason for feedback",
-                  labelStyle: TextStyle(color: Colors.grey), // Label color
+                  labelStyle: TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.black,
-                        width: 2.0), // Border color on focus
+                    borderSide: BorderSide(color: Colors.black, width: 2.0),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.black,
-                        width: 1.0), // Border color when enabled
+                    borderSide: BorderSide(color: Colors.black, width: 1.0),
                   ),
                 ),
                 items: [
@@ -156,29 +189,24 @@ class _FeedbacklistState extends State<Feedbacklist> {
                 maxLines: 5,
                 decoration: const InputDecoration(
                   labelText: "Text area",
-                  labelStyle: TextStyle(color: Colors.grey), // Label color
+                  labelStyle: TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.black,
-                        width: 2.0), // Border color on focus
+                    borderSide: BorderSide(color: Colors.black, width: 2.0),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
               Center(
                 child: SizedBox(
-                  width: double.infinity, // Full width button
+                  width: double.infinity,
                   child: ElevatedButton(
-                    onPressed:
-                        _validateAndSubmitFeedback, // Call validation method
+                    onPressed: _validateAndSubmitFeedback,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
-                      backgroundColor: const Color.fromRGBO(
-                          100, 30, 30, 1), // Button background color
-                      foregroundColor:
-                          const Color.fromRGBO(239, 238, 233, 1), // Text color
+                      backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
+                      foregroundColor: const Color.fromRGBO(239, 238, 233, 1),
                     ),
                     child: const Text("Submit"),
                   ),
