@@ -95,7 +95,7 @@ Widget historyList() {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Gift Name: ${giftID}', // Display giftID as placeholder
+                                        'Gift ID: ${giftID}', // Display giftID as placeholder
                                         style: TextStyle(
                                           fontSize: 9.sp,
                                           color: const Color.fromRGBO(116, 116, 116, 1),
@@ -103,7 +103,7 @@ Widget historyList() {
                                       ),
                                       SizedBox(height: 1.5.h),
                                       Text(
-                                        'Redeem Time: ${giftHistory['requestdate'].toDate().toLocal().toString()}', // Format date as needed
+                                        'Echange Date: ${giftHistory['requestdate'].toDate().toLocal().toString()}', // Format date as needed
                                         style: TextStyle(
                                           fontSize: 9.sp,
                                           color: const Color.fromRGBO(116, 116, 116, 1),
