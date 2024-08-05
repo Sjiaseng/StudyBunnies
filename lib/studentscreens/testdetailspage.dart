@@ -173,7 +173,7 @@ class TestDetailsPage extends StatelessWidget {
                       }
 
                       final questions = snapshot.data!;
-                      List<TextEditingController> _controllers = List.generate(
+                      List<TextEditingController> controllers = List.generate(
                         questions.length,
                         (index) => TextEditingController(),
                       );
@@ -189,7 +189,7 @@ class TestDetailsPage extends StatelessWidget {
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     foregroundColor: Colors.white,
-                                    backgroundColor: Color.fromRGBO(100, 30, 30, 1), // Text color
+                                    backgroundColor: const Color.fromRGBO(100, 30, 30, 1), // Text color
                                     minimumSize: const Size(double.infinity, 50), // Full width of card
                                   ),
                                   onPressed: () {
@@ -197,7 +197,7 @@ class TestDetailsPage extends StatelessWidget {
                                     for (int i = 0; i < questions.length; i++) {
                                       answers.add({
                                         'questionID': questions[i]['questionID'],
-                                        'answer': _controllers[i].text,
+                                        'answer': controllers[i].text,
                                       });
                                     }
                                     _submitAnswers(context, answers);
@@ -209,7 +209,6 @@ class TestDetailsPage extends StatelessWidget {
                           }
 
                           final question = questions[index];
-                          final questionID = question['questionID'];
                           final questionText = question['question'];
 
                           return Card(
@@ -224,7 +223,7 @@ class TestDetailsPage extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 8.0),
                                   TextField(
-                                    controller: _controllers[index],
+                                    controller: controllers[index],
                                     decoration: const InputDecoration(
                                       labelText: 'Your Answer',
                                     ),
