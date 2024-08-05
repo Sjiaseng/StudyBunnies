@@ -53,7 +53,7 @@ class _TimetablelistState extends State<Timetablelist> {
             PageTransition(
               type: PageTransitionType.leftToRight,
               duration: const Duration(milliseconds: 305),
-              child: const Noteslist(classID: '', className: '',),
+              child: Notelist(),
             ),
           );
         }

@@ -28,7 +28,7 @@ void navigateToPage(int index, BuildContext context) {
         PageTransition(
           type: PageTransitionType.fade,
           duration: const Duration(milliseconds: 505),
-          child: const Noteslist(classID: '', className: '',),
+          child: Notelist(),
         ),
       );
       break;

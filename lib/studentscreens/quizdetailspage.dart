@@ -22,7 +22,7 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
   final Map<String, int?> _selectedOptionIndices =
       {}; // Updated to store indices
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String studentQuizAnsID = '8heJ8re7mDUVBNJ0FaBw'; // Document name
+  // final String studentQuizAnsID = '8heJ8re7mDUVBNJ0FaBw'; // Document name
 
   @override
   Widget build(BuildContext context) {
@@ -112,10 +112,12 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
                                     style: ElevatedButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 16.0),
+                                      foregroundColor: Colors.black,
                                       backgroundColor: isSelected
-                                          ? Colors.yellow
-                                          : Colors
-                                              .blue, // Highlight selected option
+                                          ? const Color.fromRGBO(
+                                              195, 154, 29, 1)
+                                          : Colors.yellow[
+                                              100], // Highlight selected option
                                     ),
                                     child: Text(choice),
                                   ),
@@ -139,6 +141,8 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
               child: ElevatedButton(
                 onPressed: _onSubmit,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(100, 30, 30, 1),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
                 child: const Text('Submit'),
@@ -216,6 +220,11 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
     }
   }
 
+  bool _areAllQuestionsAnswered(List<String> questionIDs) {
+    return questionIDs
+        .every((questionID) => _selectedOptionIndices.containsKey(questionID));
+  }
+
   void _onOptionTap(String questionID, String selectedOption, int index) {
     setState(() {
       _selectedOptionIndices[questionID] = index; // Store the index
@@ -253,8 +262,6 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
         'submission': 'submitted',
         'submissionDate': FieldValue.serverTimestamp(),
       });
-
-      final studentQuizAnsID = docRef.id; // Get the newly created document ID
 
       // Update student's points
       await _updateStudentPoints(score);

@@ -175,7 +175,7 @@ class _ClassdetailsState extends State<Classdetails> {
                                         className: widget.className,
                                         chapterName: '', // Provide relevant data if available
                                         noteContent: '', // Provide relevant data if available
-                                        noteID: noteData['noteID']!, // Pass the noteID
+                                        noteID: noteData['noteID']!, userID: '', // Pass the noteID
                                       ),
                                     ),
                                   );

@@ -331,7 +331,7 @@ class _QuizTestListState extends State<QuizTestList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: mainappbar(
-        "Quizzes & Tests",
+        "Quiz/Test",
         "This section consists of student quizzes and tests.",
         context,
       ),
@@ -436,13 +436,14 @@ class _QuizTestListState extends State<QuizTestList> {
                                             backgroundColor: Colors.grey,
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(8.0)),
+                                                    BorderRadius.circular(
+                                                        16.0)),
                                             minimumSize: const Size(40, 40),
                                             padding: const EdgeInsets.symmetric(
-                                                horizontal: 4.0),
+                                                horizontal: 8.0),
                                           ),
                                           child: const Text(
-                                            'DetailAs',
+                                            'Attempt',
                                             style: TextStyle(fontSize: 10.0),
                                           ),
                                         ),
@@ -456,13 +457,14 @@ class _QuizTestListState extends State<QuizTestList> {
                                           },
                                           style: ElevatedButton.styleFrom(
                                             foregroundColor: Colors.black,
-                                            backgroundColor: Colors.blue,
+                                            backgroundColor: Colors.grey,
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(8.0)),
+                                                    BorderRadius.circular(
+                                                        16.0)),
                                             minimumSize: const Size(40, 40),
                                             padding: const EdgeInsets.symmetric(
-                                                horizontal: 4.0),
+                                                horizontal: 8.0),
                                           ),
                                           child: const Text(
                                             'Review',
@@ -544,13 +546,14 @@ class _QuizTestListState extends State<QuizTestList> {
                                             backgroundColor: Colors.grey,
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(8.0)),
+                                                    BorderRadius.circular(
+                                                        16.0)),
                                             minimumSize: const Size(40, 40),
                                             padding: const EdgeInsets.symmetric(
-                                                horizontal: 4.0),
+                                                horizontal: 8.0),
                                           ),
                                           child: const Text(
-                                            'Details',
+                                            'Attempt',
                                             style: TextStyle(fontSize: 10.0),
                                           ),
                                         ),
@@ -564,16 +567,17 @@ class _QuizTestListState extends State<QuizTestList> {
                                           },
                                           style: ElevatedButton.styleFrom(
                                             foregroundColor: Colors.black,
-                                            backgroundColor: Colors.blue,
+                                            backgroundColor: Colors.grey,
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(8.0)),
+                                                    BorderRadius.circular(
+                                                        16.0)),
                                             minimumSize: const Size(40, 40),
                                             padding: const EdgeInsets.symmetric(
-                                                horizontal: 4.0),
+                                                horizontal: 8.0),
                                           ),
                                           child: const Text(
-                                            'REVIEW',
+                                            'Review',
                                             style: TextStyle(fontSize: 10.0),
                                           ),
                                         ),
