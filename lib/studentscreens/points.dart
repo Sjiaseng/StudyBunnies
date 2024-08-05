@@ -23,6 +23,7 @@ class _PointsState extends State<Points> {
     _initializeUserId();
   }
 
+  // Initialize the user ID and check/set points field
   Future<void> _initializeUserId() async {
     try {
       final userId = await _secureStorage.read(key: 'userID');
@@ -44,18 +45,17 @@ class _PointsState extends State<Points> {
     }
   }
 
+  // Check if points field exists and set default if not
   Future<void> _checkAndSetPointsField(String userID) async {
     try {
-      DocumentReference docRef =
-          FirebaseFirestore.instance.collection('points').doc(userID);
+      DocumentReference docRef = FirebaseFirestore.instance.collection('points').doc(userID);
       DocumentSnapshot doc = await docRef.get();
 
       if (!doc.exists) {
         // Create the document with a default points field set to 0
         await docRef.set({'points': 0});
         setState(() {
-          debugMessage =
-              'Document created for User ID: $userID with default points = 0';
+          debugMessage = 'Document created for User ID: $userID with default points = 0';
         });
       } else {
         // Check if the 'points' field exists and set it to 0 if it doesn't
@@ -81,97 +81,105 @@ class _PointsState extends State<Points> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: mainappbar(
-          "Points", "This section consists of student points.", context),
-      drawer: userID == null
-          ? const Drawer(child: Center(child: CircularProgressIndicator()))
-          : StudentDrawer(drawercurrentindex: 6, userID: userID!),
+      appBar: mainappbar("Points", "This section consists of student points.", context),
+      drawer: _buildDrawer(),
       bottomNavigationBar: inactivenavbar(),
-      body: userID == null
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
+      body: _buildBody(),
+    );
+  }
+
+  // Build the drawer based on userID
+  Widget _buildDrawer() {
+    return userID == null
+        ? const Drawer(child: Center(child: CircularProgressIndicator()))
+        : StudentDrawer(drawercurrentindex: 6, userID: userID!);
+  }
+
+  // Build the main body of the Points page
+  Widget _buildBody() {
+    return userID == null
+        ? const Center(child: CircularProgressIndicator())
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildPointsStreamBuilder(),
+              // Uncomment for debugging
+              // Padding(
+              //   padding: const EdgeInsets.all(16.0),
+              //   child: Text(
+              //     'Debug Info: $debugMessage',
+              //     style: const TextStyle(color: Colors.red),
+              //   ),
+              // ),
+            ],
+          );
+  }
+
+  // Build the StreamBuilder to fetch and display points
+  Widget _buildPointsStreamBuilder() {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('points')
+          .doc(userID)
+          .snapshots(),
+      builder: (context, pointsSnapshot) {
+        if (pointsSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (pointsSnapshot.hasError) {
+          return Center(child: Text('Error: ${pointsSnapshot.error}'));
+        }
+
+        if (!pointsSnapshot.hasData) {
+          return const Center(child: Text('No data found.'));
+        }
+
+        var pointsData = pointsSnapshot.data!.data() as Map<String, dynamic>?;
+        if (pointsData == null) {
+          return const Center(child: Text('Document data is null.'));
+        }
+
+        int points = pointsData['points'] ?? 0;
+        return _buildPointsCard(points);
+      },
+    );
+  }
+
+  // Build the card to display points
+  Widget _buildPointsCard(int points) {
+    return Center(
+      child: SizedBox(
+        height: 500,
+        child: Card(
+          margin: const EdgeInsets.all(16.0),
+          elevation: 4.0,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                StreamBuilder<DocumentSnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('points')
-                      .doc(userID)
-                      .snapshots(),
-                  builder: (context, pointsSnapshot) {
-                    if (pointsSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    if (pointsSnapshot.hasError) {
-                      return Center(
-                          child: Text('Error: ${pointsSnapshot.error}'));
-                    }
-
-                    if (!pointsSnapshot.hasData) {
-                      return const Center(child: Text('No data found.'));
-                    }
-
-                    var pointsData =
-                        pointsSnapshot.data!.data() as Map<String, dynamic>?;
-                    if (pointsData == null) {
-                      return const Center(
-                          child: Text('Document data is null.'));
-                    }
-
-                    int points = pointsData['points'] ?? 0;
-
-                    return Center(
-                      child: SizedBox(
-                        height: 500,
-                        child: Card(
-                          margin: const EdgeInsets.all(16.0),
-                          elevation: 4.0,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '$points',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 90, // Bolder text
-                                      ),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Text(
-                                  'points',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w200,
-                                        fontSize: 40, // Bolder text
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                Text(
+                  '$points',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 90,
                       ),
-                    );
-                  },
                 ),
-                // Display debug message below the points section
-                // Padding(
-                //   padding: const EdgeInsets.all(16.0),
-                //   child: Text(
-                //     'Debug Info: $debugMessage',
-                //     style: const TextStyle(color: Colors.red),
-                //   ),
-                // ),
+                const SizedBox(height: 8.0),
+                Text(
+                  'points',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w200,
+                        fontSize: 40,
+                      ),
+                ),
               ],
             ),
+          ),
+        ),
+      ),
     );
   }
 }
