@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class QuizDetailsPage extends StatefulWidget {
   final String userID;
@@ -18,7 +19,8 @@ class QuizDetailsPage extends StatefulWidget {
 }
 
 class _QuizDetailsPageState extends State<QuizDetailsPage> {
-  final Map<String, int?> _selectedOptionIndices = {}; // Updated to store indices
+  final Map<String, int?> _selectedOptionIndices =
+      {}; // Updated to store indices
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String studentQuizAnsID = '8heJ8re7mDUVBNJ0FaBw'; // Document name
 
@@ -29,6 +31,12 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
         title: const Text('Quiz Details'),
         backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.volume_up), // Audio icon
+            onPressed: _onAudioIconPressed,
+          ),
+        ],
       ),
       body: CustomScrollView(
         slivers: [
@@ -193,6 +201,21 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
     );
   }
 
+  void _onAudioIconPressed() async {
+    final player = AudioPlayer();
+    const assetPath =
+        'assets/audio/once-in-paris-168895.mp3'; // Path to the audio file in assets
+
+    try {
+      // Play the audio file from assets
+      await player.play(AssetSource(assetPath));
+
+      print('Audio is playing');
+    } catch (e) {
+      print('Error playing audio: $e');
+    }
+  }
+
   void _onOptionTap(String questionID, String selectedOption, int index) {
     setState(() {
       _selectedOptionIndices[questionID] = index; // Store the index
@@ -221,25 +244,24 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
       // Calculate the score based on the selected options
       final score = await _calculateScore();
 
-      // Submit the quiz answers and score to Firestore
-      await _firestore
-          .collection('studentQuizAnswer')
-          .doc(studentQuizAnsID)
-          .set({
+      // Create a new document in 'studentQuizAnswer' collection
+      final docRef = await _firestore.collection('studentQuizAnswer').add({
         'quizID': widget.quizID,
         'score': score, // Use the calculated score
         'studentAnswer': studentAnswers,
         'studentID': widget.userID,
-        'studentQuizAnsID': studentQuizAnsID,
         'submission': 'submitted',
         'submissionDate': FieldValue.serverTimestamp(),
       });
+
+      final studentQuizAnsID = docRef.id; // Get the newly created document ID
 
       // Update student's points
       await _updateStudentPoints(score);
 
       print('Quiz answers submitted successfully.');
-      Navigator.pop(context); // Optionally navigate back or show a success message
+      Navigator.pop(
+          context); // Optionally navigate back or show a success message
     } catch (error) {
       print('Failed to submit quiz answers: $error');
     }
@@ -260,7 +282,8 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
 
         if (questionSnapshot.exists) {
           final questionData = questionSnapshot.data() as Map<String, dynamic>;
-          final correctOptionIndex = questionData['correctOption']; // Ensure this field matches Firestore
+          final correctOptionIndex = questionData[
+              'correctOption']; // Ensure this field matches Firestore
 
           if (selectedOptionIndex == correctOptionIndex) {
             score += 1;
@@ -276,10 +299,8 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
 
   Future<void> _updateStudentPoints(int score) async {
     try {
-      final studentPointsDoc = await _firestore
-          .collection('points')
-          .doc(widget.userID)
-          .get();
+      final studentPointsDoc =
+          await _firestore.collection('points').doc(widget.userID).get();
 
       if (studentPointsDoc.exists) {
         final currentPoints = studentPointsDoc.data()!['points'] as int? ?? 0;
