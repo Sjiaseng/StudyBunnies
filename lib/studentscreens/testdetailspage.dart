@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 
-class QuizDetailsPage extends StatelessWidget {
+class TestDetailsPage extends StatelessWidget {
   final String userID;
   final String classID;
-  final String quizID;
+  final String testID;
 
-  const QuizDetailsPage({
+  const TestDetailsPage({
     Key? key,
     required this.userID,
     required this.classID,
-    required this.quizID,
+    required this.testID,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quiz Details'),
-        backgroundColor: Color.fromRGBO(100, 30, 30, 1),
+        title: const Text('Test Details'),
+        backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
         foregroundColor: Colors.white,
       ),
       body: Padding(
@@ -26,7 +26,7 @@ class QuizDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Quiz Details',
+              'Test Details',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 16.0),
@@ -41,7 +41,7 @@ class QuizDetailsPage extends StatelessWidget {
             ),
             const SizedBox(height: 8.0),
             Text(
-              'Quiz ID: $quizID',
+              'Test ID: $testID',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],

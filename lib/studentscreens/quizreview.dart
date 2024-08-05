@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class QuizDetailsPage extends StatelessWidget {
+class QuizReview extends StatelessWidget {
   final String userID;
   final String classID;
   final String quizID;
 
-  const QuizDetailsPage({
+  const QuizReview({
     Key? key,
     required this.userID,
     required this.classID,
@@ -16,7 +16,7 @@ class QuizDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quiz Details'),
+        title: const Text('Quiz Review'),
         backgroundColor: Color.fromRGBO(100, 30, 30, 1),
         foregroundColor: Colors.white,
       ),

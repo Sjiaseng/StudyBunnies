@@ -21,8 +21,8 @@ class Classdetails extends StatefulWidget {
 class _ClassdetailsState extends State<Classdetails> {
   final TextEditingController _searchNotesController = TextEditingController();
   
-  List<String> _notes = [];
-  List<String> _filteredNotes = [];
+  List<Map<String, String>> _notes = []; // Changed to store note as map
+  List<Map<String, String>> _filteredNotes = []; // Changed to store note as map
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _ClassdetailsState extends State<Classdetails> {
     setState(() {
       _filteredNotes = query.isEmpty
           ? List.from(_notes)
-          : _notes.where((note) => note.toLowerCase().contains(query)).toList();
+          : _notes.where((note) => note['noteTitle']!.toLowerCase().contains(query)).toList();
     });
   }
 
@@ -60,7 +60,8 @@ class _ClassdetailsState extends State<Classdetails> {
         setState(() {
           _notes = snapshot.docs.map((doc) {
             final noteTitle = doc['noteTitle'] as String;
-            return noteTitle;
+            final noteID = doc.id; // Fetch the note ID
+            return {'noteTitle': noteTitle, 'noteID': noteID}; // Store as a map
           }).toList();
           _filteredNotes = List.from(_notes);
         });
@@ -102,7 +103,7 @@ class _ClassdetailsState extends State<Classdetails> {
           context,
         ),
         bottomNavigationBar: navbar(1),
-        drawer: StudentDrawer(drawercurrentindex: 2, userID: 'userID'),
+        drawer: StudentDrawer(drawercurrentindex: 2, userID: 'userID'), // Ensure you pass the correct userID
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -131,7 +132,7 @@ class _ClassdetailsState extends State<Classdetails> {
               ),
               const SizedBox(height: 16.0),
               Column(
-                children: _filteredNotes.map((note) {
+                children: _filteredNotes.map((noteData) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Container(
@@ -155,7 +156,7 @@ class _ClassdetailsState extends State<Classdetails> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  note,
+                                  noteData['noteTitle']!,
                                   style: const TextStyle(
                                     fontSize: 16.0,
                                   ),
@@ -169,10 +170,12 @@ class _ClassdetailsState extends State<Classdetails> {
                                       type: PageTransitionType.rightToLeft,
                                       duration: const Duration(milliseconds: 305),
                                       child: NotesDetailsPage(
-                                        noteTitle: note,
+                                        noteTitle: noteData['noteTitle']!,
                                         classID: widget.classID,
                                         className: widget.className,
-                                        chapterName: '', // Adjust as needed
+                                        chapterName: '', // Provide relevant data if available
+                                        noteContent: '', // Provide relevant data if available
+                                        noteID: noteData['noteID']!, // Pass the noteID
                                       ),
                                     ),
                                   );
