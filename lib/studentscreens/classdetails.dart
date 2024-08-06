@@ -194,9 +194,13 @@ class _ClassdetailsState extends State<Classdetails> {
                                     ),
                                   );
                                 },
-                                style: TextButton.styleFrom(
+                                style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.black,
                                   backgroundColor: Colors.grey,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0),
+                                  side: const BorderSide(
+                                    color: Colors.grey, 
+                                    width: 1.0,))
                                 ),
                                 child: const Text('View'),
                               ),

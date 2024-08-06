@@ -165,6 +165,8 @@ class _ClasslistState extends State<Classlist> {
                             title: Row(
                               children: [
                                 Expanded(child: Text(_filteredClasses[index])),
+                                // Commented out the LinearProgressIndicator
+                                /*
                                 const SizedBox(
                                   width: 100,
                                   child: LinearProgressIndicator(
@@ -175,6 +177,7 @@ class _ClasslistState extends State<Classlist> {
                                     ),
                                   ),
                                 ),
+                                */
                               ],
                             ),
                             onTap: () async {
