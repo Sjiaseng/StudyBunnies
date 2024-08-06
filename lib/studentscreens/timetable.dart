@@ -7,7 +7,6 @@ import 'package:studybunnies/studentscreens/notes.dart';
 import 'package:studybunnies/studentwidgets/appbar.dart';
 import 'package:studybunnies/studentwidgets/bottomnav.dart';
 import 'package:studybunnies/studentwidgets/drawer.dart';
-import 'package:studybunnies/studentwidgets/timetable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore integration
 
 // Main widget for the timetable list screen

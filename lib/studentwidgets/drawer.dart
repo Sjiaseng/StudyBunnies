@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:page_transition/page_transition.dart'; // For page transition animation
 import 'package:sizer/sizer.dart'; // For responsive sizing
-import 'package:intl/intl.dart'; // For formatting data
+//import 'package:intl/intl.dart'; // For formatting data
 import 'package:studybunnies/authentication/logoutscreen.dart';
 import 'package:studybunnies/studentscreens/classes.dart';
 import 'package:studybunnies/studentscreens/faq.dart';
@@ -27,7 +27,7 @@ class StudentDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate = DateFormat('dd-MM-yyyy (E)').format(DateTime.now());
+    //String formattedDate = DateFormat('dd-MM-yyyy (E)').format(DateTime.now());
 
     return Drawer(
       backgroundColor: const Color.fromRGBO(100, 30, 30, 1),

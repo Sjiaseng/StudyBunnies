@@ -254,6 +254,7 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
       final score = await _calculateScore();
 
       // Create a new document in 'studentQuizAnswer' collection
+      // ignore: unused_local_variable
       final docRef = await _firestore.collection('studentQuizAnswer').add({
         'quizID': widget.quizID,
         'score': score, // Use the calculated score
