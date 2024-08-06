@@ -19,30 +19,15 @@ class Classlist extends StatefulWidget {
 }
 
 class _ClasslistState extends State<Classlist> {
-
   final Session session = Session();
-  String? userId;
-  String? userName;
-  String? profileImage;
+  Map<String, int> classStudentCounts = {};
+
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    _getClassStudentCounts();
   }
 
-  Future<void> _fetchUserData() async {
-    userId = await session.getUserId();
-    if (userId != null) {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId!).get();
-      if (userDoc.exists) {
-        setState(() {
-          userName = userDoc['username'];
-          profileImage = userDoc['profileImage'];
-        });
-      }
-    }
-  }
-  
   List<bool> selectedFilters = [true, false, false];
   TextEditingController mycontroller = TextEditingController();
   String searchQuery = '';
@@ -53,6 +38,22 @@ class _ClasslistState extends State<Classlist> {
         selectedFilters[i] = i == index;
       }
     });
+  }
+
+  String? classID;
+
+  Future<void> _getClassStudentCounts() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('classes').get();
+
+    for (var doc in querySnapshot.docs) {
+      String classID = doc.id;
+      List<dynamic> students = doc['student'] ?? [];
+      int studentCount = students.length;
+
+      setState(() {
+        classStudentCounts[classID] = studentCount;
+      });
+    }
   }
 
   @override
@@ -198,8 +199,7 @@ class _ClasslistState extends State<Classlist> {
                           ],
                         ),
                       );
-                  }
-
+                    }
 
                     return ListView.builder(
                       scrollDirection: Axis.vertical,
@@ -207,6 +207,7 @@ class _ClasslistState extends State<Classlist> {
                       itemBuilder: (BuildContext context, int index) {
                         var classData = classes[index];
                         var classID = classData.id;  // Get the classID from the document ID
+                        int totalStudents = classStudentCounts[classID] ?? 0;
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -277,7 +278,7 @@ class _ClasslistState extends State<Classlist> {
                                             ),
                                             SizedBox(width: 3.w),
                                             Text(
-                                              'Total Students: 0',
+                                              'Total Students: $totalStudents',
                                               maxLines: 1,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
