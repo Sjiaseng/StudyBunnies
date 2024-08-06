@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For controlling system UI overlay styles
 import 'package:page_transition/page_transition.dart';
@@ -46,26 +47,32 @@ class _StudentDashboardState extends State<StudentDashboard> {
 
   Future<void> _fetchUserProfile(String userId) async {
     try {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
       if (userDoc.exists) {
         final userData = userDoc.data()!;
         setState(() {
           userName = userData['username'] ?? 'Student';
-          userProfilePicUrl = userData['profile_img'] ?? 'assets/images/placeholder.png'; // Use a local image if URL is empty or invalid
+          userProfilePicUrl = userData['profile_img'] ??
+              'assets/images/placeholder.png'; // Use a local image if URL is empty or invalid
         });
         print('Fetched username: $userName');
         print('Fetched profile_img: $userProfilePicUrl');
       } else {
         setState(() {
           userName = 'Student';
-          userProfilePicUrl = 'assets/images/placeholder.png'; // Local placeholder
+          userProfilePicUrl =
+              'assets/images/placeholder.png'; // Local placeholder
         });
       }
     } catch (e) {
       print('Error fetching user profile: $e');
       setState(() {
         userName = 'Student';
-        userProfilePicUrl = 'assets/images/placeholder.png'; // Local placeholder
+        userProfilePicUrl =
+            'assets/images/placeholder.png'; // Local placeholder
       });
     }
   }
@@ -74,7 +81,8 @@ class _StudentDashboardState extends State<StudentDashboard> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.black, // Set status bar color to black
-      statusBarBrightness: Brightness.dark, // Set status bar text/icons to dark mode
+      statusBarBrightness:
+          Brightness.dark, // Set status bar text/icons to dark mode
     ));
 
     return GestureDetector(
@@ -112,9 +120,12 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    'Welcome back,'
-                     '$userName!',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 20, fontFamily: 'Times New Roman',),
+                    'Welcome back, $userName!',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          fontFamily: 'Times New Roman',
+                        ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -130,14 +141,23 @@ class _StudentDashboardState extends State<StudentDashboard> {
                     child: Column(
                       children: [
                         CircleAvatar(
-                          backgroundImage: NetworkImage(userProfilePicUrl),
+                          backgroundImage:
+                              userProfilePicUrl.startsWith('http') ||
+                                      userProfilePicUrl.startsWith('https')
+                                  ? NetworkImage(userProfilePicUrl)
+                                  : FileImage(File(userProfilePicUrl))
+                                      as ImageProvider,
                           radius: 50.0,
-                          backgroundColor: Colors.grey[200], // Optional: background color if the image fails to load
+                          backgroundColor: Colors.grey[
+                              500], // Optional: background color if the image fails to load
                         ),
                         const SizedBox(height: 16.0),
                         Text(
                           userName,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                           textAlign: TextAlign.center,
                         ),
                         Text(

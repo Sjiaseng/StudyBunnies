@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:studybunnies/studentscreens/notesdetails.dart';
 import 'package:studybunnies/studentscreens/dashboard.dart';
@@ -21,14 +22,16 @@ class Classdetails extends StatefulWidget {
 class _ClassdetailsState extends State<Classdetails> {
   final TextEditingController _searchNotesController = TextEditingController();
   
-  List<Map<String, String>> _notes = []; // Changed to store note as map
-  List<Map<String, String>> _filteredNotes = []; // Changed to store note as map
+  List<Map<String, String>> _notes = [];
+  List<Map<String, String>> _filteredNotes = [];
+  String? _userID;
 
   @override
   void initState() {
     super.initState();
     _searchNotesController.addListener(_filterNotes);
     _fetchNotes();
+    _fetchUserID(); // Fetch userID on init
   }
 
   @override
@@ -36,6 +39,14 @@ class _ClassdetailsState extends State<Classdetails> {
     _searchNotesController.removeListener(_filterNotes);
     _searchNotesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchUserID() async {
+    final storage = FlutterSecureStorage();
+    final userID = await storage.read(key: 'userID');
+    setState(() {
+      _userID = userID;
+    });
   }
 
   void _filterNotes() {
@@ -60,8 +71,8 @@ class _ClassdetailsState extends State<Classdetails> {
         setState(() {
           _notes = snapshot.docs.map((doc) {
             final noteTitle = doc['noteTitle'] as String;
-            final noteID = doc.id; // Fetch the note ID
-            return {'noteTitle': noteTitle, 'noteID': noteID}; // Store as a map
+            final noteID = doc.id;
+            return {'noteTitle': noteTitle, 'noteID': noteID};
           }).toList();
           _filteredNotes = List.from(_notes);
         });
@@ -103,7 +114,10 @@ class _ClassdetailsState extends State<Classdetails> {
           context,
         ),
         bottomNavigationBar: navbar(1),
-        drawer: StudentDrawer(drawercurrentindex: 2, userID: 'userID'), // Ensure you pass the correct userID
+        drawer: StudentDrawer(
+          drawercurrentindex: 2,
+          userID: _userID ?? 'guest', // Use the fetched userID or default to 'guest'
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -173,16 +187,16 @@ class _ClassdetailsState extends State<Classdetails> {
                                         noteTitle: noteData['noteTitle']!,
                                         classID: widget.classID,
                                         className: widget.className,
-                                        chapterName: '', // Provide relevant data if available
-                                        noteContent: '', // Provide relevant data if available
-                                        noteID: noteData['noteID']!, userID: '', // Pass the noteID
+                                        noteID: noteData['noteID']!, 
+                                        userID: '', 
+                                        chapterName: '',
                                       ),
                                     ),
                                   );
                                 },
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.black,
-                                  backgroundColor: Colors.grey, // Black text color
+                                  backgroundColor: Colors.grey,
                                 ),
                                 child: const Text('View'),
                               ),
