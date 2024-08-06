@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:studybunnies/adminscreens/adminsubpage/adduser.dart';
-import 'package:studybunnies/adminscreens/dashboard.dart';
-import 'package:studybunnies/adminscreens/timetable.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/addclasslecture.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/addclassstudent.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/classlecture.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/classnote.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/classstudent.dart';
+import 'package:studybunnies/adminscreens/adminsubpage/editclass.dart';
 import 'package:studybunnies/adminwidgets/appbar.dart';
 import 'package:studybunnies/adminwidgets/bottomnav.dart';
 import 'package:studybunnies/adminwidgets/drawer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:studybunnies/authentication/session.dart';
-
 
 class Classinner extends StatefulWidget {
   final String classID;
@@ -21,146 +23,177 @@ class Classinner extends StatefulWidget {
 
 class _ClassinnerState extends State<Classinner> {
   final Session session = Session();
-  String? userId;
-  String? userName;
-  String? profileImage;
+  int selectedIndex = 0;
+  String? className;
+
+  // Correctly define userCache as Map<String, Map<String, String>>
+  final Map<String, Map<String, String>> userCache = {};
+
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    _fetchClassData();
+
   }
 
-  Future<void> _fetchUserData() async {
-    userId = await session.getUserId();
-    if (userId != null) {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId!).get();
-      if (userDoc.exists) {
-        setState(() {
-          userName = userDoc['username'];
-          profileImage = userDoc['profileImage'];
-        });
-      }
+  Future<void> _fetchClassData() async {
+    final classDoc = await FirebaseFirestore.instance.collection('classes').doc(widget.classID).get();
+    if (classDoc.exists) {
+      setState(() {
+        className = classDoc['classname'];
+      });
     }
   }
-  List<bool> selectedFilters = [true, false, false, false];
-
-  TextEditingController mycontroller = TextEditingController();
 
   void focusButton(int index) {
     setState(() {
-      for (int buttonIndex = 0; buttonIndex < selectedFilters.length; buttonIndex++) {
-        if (buttonIndex == index) {
-          selectedFilters[buttonIndex] = true;
-        } else {
-          selectedFilters[buttonIndex] = false;
-        }
-      }
+      selectedIndex = index;
     });
   }
 
-@override
-Widget build(BuildContext context) {
-  return GestureDetector(
-    onPanUpdate: (details) {
-      // Swiping in right direction.
-      if (details.delta.dx > 25) {
-        Navigator.push(
-          context, PageTransition(
-            type: PageTransitionType.leftToRight,
-            duration: const Duration(milliseconds: 305),
-            child: const Timetablelist(),
+  Widget buildToggleButton(String text, int index) {
+    Color bottomBorderColor = selectedIndex == index ? Colors.black : Colors.grey;
+
+    return GestureDetector(
+      onTap: () => focusButton(index),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: bottomBorderColor, width: 2.0),
           ),
-        );
-      }
-      // Swiping in left direction.
-      if (details.delta.dx < -25) {
-        Navigator.push(
-          context, PageTransition(
-            type: PageTransitionType.rightToLeft,
-            duration: const Duration(milliseconds: 305),
-            child: const AdminDashboard(),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 5.w),
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: selectedIndex == index
+                  ? FontWeight.bold
+                  : FontWeight.normal,
+              decoration: TextDecoration.none,
+            ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildFloatingActionButton() {
+    switch (selectedIndex) {
+      case 0:
+        return FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                duration: const Duration(milliseconds: 305),
+                child: Editclass(classID: widget.classID),
+              ),
+            );
+          },
+          backgroundColor: const Color.fromARGB(255, 100, 30, 30),
+          shape: const CircleBorder(),
+          child: const Icon(Icons.edit, color: Colors.white),
         );
-      }
-    },
-    child: Scaffold(
-      appBar: subappbar("Class Name Here", context),
+      case 1:
+        return FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                duration: const Duration(milliseconds: 305),
+                child: Addclasslecture(classID: widget.classID),
+              ),
+            );
+          },
+          backgroundColor: const Color.fromARGB(255, 100, 30, 30),
+          shape: const CircleBorder(),
+          child: const Icon(Icons.person_add, color: Colors.white),
+        );
+      case 2:
+        return FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                duration: const Duration(milliseconds: 305),
+                child: Addclassstudent(classID: widget.classID),
+              ),
+            );
+          },
+          backgroundColor: const Color.fromARGB(255, 100, 30, 30),
+          shape: const CircleBorder(),
+          child: const Icon(Icons.person_add, color: Colors.white),
+        );
+      default:
+        return FloatingActionButton(
+          onPressed: () {
+            void showErrorDialog(String message) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Loading Failed'),
+                    content: Text(message),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+            showErrorDialog('Loading Please Wait...');
+          },
+          backgroundColor: const Color.fromARGB(255, 100, 30, 30),
+          shape: const CircleBorder(),
+          child: const Icon(Icons.edit, color: Colors.white),
+        );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: subappbar(className ?? "Class Name Here", context),
       bottomNavigationBar: navbar(3),
       drawer: const AdminDrawer(initialIndex: 3),
       body: Padding(
-        padding: EdgeInsets.only(left: 5.w, top: 1.5.h, right: 5.w),
+        padding: EdgeInsets.only(left: 5.w, top: 2.5.h, right: 5.w),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ToggleButtons(
-              textStyle: const TextStyle(fontFamily: 'Roboto'),
-              constraints: BoxConstraints(minWidth: 2.w, minHeight: 3.h),
-              isSelected: selectedFilters,
-              borderRadius: BorderRadius.circular(2.w),
-              onPressed: focusButton,
-              selectedColor: Colors.black,
-              fillColor: Colors.grey,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Text(
-                    'All',
-                    style: TextStyle(
-                      fontWeight: selectedFilters[0] ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Text(
-                    'Students',
-                    style: TextStyle(
-                      fontWeight: selectedFilters[1] ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Text(
-                    'Teachers',
-                    style: TextStyle(
-                      fontWeight: selectedFilters[2] ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
-                  child: Text(
-                    'Admins',
-                    style: TextStyle(
-                      fontWeight: selectedFilters[3] ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                buildToggleButton('Notes', 0),
+                buildToggleButton('Lecturer', 1),
+                buildToggleButton('Student', 2),
               ],
             ),
-
-            SizedBox(height: 1.h), 
-
+            SizedBox(height: 3.h),
+            Expanded(
+              child: IndexedStack(
+                index: selectedIndex,
+                children: [
+                  Classnote(classID: widget.classID),
+                  Classlecture(classID: widget.classID),
+                  Classstudent(classID: widget.classID),
+                ],
+              ),
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-        Navigator.push(
-          context, PageTransition(
-          type: PageTransitionType.rightToLeft,
-            duration: const Duration(milliseconds: 305),  
-            child: const Adduser(),
-          ),
-        ); 
-          // Add your action here
-        },
-        backgroundColor: const Color.fromARGB(255, 100, 30, 30), // RGB(100, 30, 30)
-        shape: const CircleBorder(), // Ensures the shape is round
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-    ),
-  );
-}
+      floatingActionButton: buildFloatingActionButton(),
+    );
+  }
 }

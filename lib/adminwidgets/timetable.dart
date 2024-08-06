@@ -31,14 +31,14 @@ Widget Timetableheader(String mydate) {
   );
 }
 
-Widget Timetablecontent(BuildContext context,String course_title, String lecturername, String venue, String timestart, String timeend) {
+Widget Timetablecontent(BuildContext context,String course_title, String lecturername, String venue, String timestart, String timeend, String timetableID) {
   return GestureDetector(
     onTap: () {
       Navigator.push(
         context, PageTransition(
           type: PageTransitionType.rightToLeft,
           duration: const Duration(milliseconds: 305),  
-          child: const Edittimetable(),
+          child: Edittimetable(timetableID: timetableID),
         )
       ); 
     },
