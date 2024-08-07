@@ -225,56 +225,66 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
         .every((questionID) => _selectedOptionIndices.containsKey(questionID));
   }
 
+  // void _onOptionTap(String questionID, String selectedOption, int index) {
+  //   setState(() {
+  //     _selectedOptionIndices[questionID] = index; // Store the index
+  //   });
+
+  //   // Fetch the index of the selected option and store it
+  //   FirebaseFirestore.instance.collection('userResponses').add({
+  //     'userID': widget.userID,
+  //     'questionID': questionID,
+  //     'chooseOption': index, // Store the selected option index
+  //     'timestamp': FieldValue.serverTimestamp(),
+  //   }).then((value) {
+  //     print('Selected option index stored successfully.');
+  //   }).catchError((error) {
+  //     print('Failed to store selected option index: $error');
+  //   });
+  // }
+
   void _onOptionTap(String questionID, String selectedOption, int index) {
-    setState(() {
-      _selectedOptionIndices[questionID] = index; // Store the index
+  setState(() {
+    _selectedOptionIndices[questionID] = index; // Store the index locally
+  });
+}
+
+// function to update the details to the studentQuizAnswer collection after click on submit
+void _onSubmit() async {
+  // Map the selected options to a format suitable for submission
+  final studentAnswers = _selectedOptionIndices.entries.map((entry) {
+    return {'questionID': entry.key, 'chooseOption': entry.value};
+  }).toList();
+
+  try {
+    // Calculate the score based on the selected options
+    final score = await _calculateScore();
+
+    // Generate a unique ID for the document
+    final studentQuizAnsID = _firestore.collection('studentQuizAnswer').doc().id;
+
+    // Create a new document in 'studentQuizAnswer' collection with the specified ID
+    await _firestore.collection('studentQuizAnswer').doc(studentQuizAnsID).set({
+      'studentQuizAnsID': studentQuizAnsID, // Save the document ID
+      'quizID': widget.quizID,
+      'score': score, // Use the calculated score
+      'studentAnswer': studentAnswers,
+      'studentID': widget.userID,
+      'submission': 'submitted',
+      'submissionDate': FieldValue.serverTimestamp(),
     });
 
-    // Fetch the index of the selected option and store it
-    FirebaseFirestore.instance.collection('userResponses').add({
-      'userID': widget.userID,
-      'questionID': questionID,
-      'chooseOption': index, // Store the selected option index
-      'timestamp': FieldValue.serverTimestamp(),
-    }).then((value) {
-      print('Selected option index stored successfully.');
-    }).catchError((error) {
-      print('Failed to store selected option index: $error');
-    });
+    // Update student's points
+    await _updateStudentPoints(score);
+
+    print('Quiz answers submitted successfully.');
+    Navigator.pop(context); // Optionally navigate back or show a success message
+  } catch (error) {
+    print('Failed to submit quiz answers: $error');
   }
+}
 
-  void _onSubmit() async {
-    // Map the selected options to a format suitable for submission
-    final studentAnswers = _selectedOptionIndices.entries.map((entry) {
-      return {'questionID': entry.key, 'chooseOption': entry.value};
-    }).toList();
-
-    try {
-      // Calculate the score based on the selected options
-      final score = await _calculateScore();
-
-      // Create a new document in 'studentQuizAnswer' collection
-      // ignore: unused_local_variable
-      final docRef = await _firestore.collection('studentQuizAnswer').add({
-        'quizID': widget.quizID,
-        'score': score, // Use the calculated score
-        'studentAnswer': studentAnswers,
-        'studentID': widget.userID,
-        'submission': 'submitted',
-        'submissionDate': FieldValue.serverTimestamp(),
-      });
-
-      // Update student's points
-      await _updateStudentPoints(score);
-
-      print('Quiz answers submitted successfully.');
-      Navigator.pop(
-          context); // Optionally navigate back or show a success message
-    } catch (error) {
-      print('Failed to submit quiz answers: $error');
-    }
-  }
-
+// function to calculate score obtained by the student
   Future<int> _calculateScore() async {
     int score = 0;
 

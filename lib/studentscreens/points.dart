@@ -46,37 +46,80 @@ class _PointsState extends State<Points> {
   }
 
   // Check if points field exists and set default if not
-  Future<void> _checkAndSetPointsField(String userID) async {
-    try {
-      DocumentReference docRef = FirebaseFirestore.instance.collection('points').doc(userID);
-      DocumentSnapshot doc = await docRef.get();
+  // Future<void> _checkAndSetPointsField(String userID) async {
+  //   try {
+  //     DocumentReference docRef = FirebaseFirestore.instance.collection('points').doc(userID);
+  //     DocumentSnapshot doc = await docRef.get();
 
-      if (!doc.exists) {
-        // Create the document with a default points field set to 0
-        await docRef.set({'points': 0});
+  //     if (!doc.exists) {
+  //       // Create the document with a default points field set to 0
+  //       await docRef.set({'points': 0});
+  //       setState(() {
+  //         debugMessage = 'Document created for User ID: $userID with default points = 0';
+  //       });
+  //     } else {
+  //       // Check if the 'points' field exists and set it to 0 if it doesn't
+  //       var data = doc.data() as Map<String, dynamic>?;
+  //       if (data == null || !data.containsKey('points')) {
+  //         await docRef.set({'points': 0}, SetOptions(merge: true));
+  //         setState(() {
+  //           debugMessage = 'Points field set to 0 for User ID: $userID';
+  //         });
+  //       } else {
+  //         setState(() {
+  //           debugMessage = 'Points field already exists for User ID: $userID';
+  //         });
+  //       }
+  //     }
+  //   } catch (e) {
+  //     setState(() {
+  //       debugMessage = 'Error in _checkAndSetPointsField: $e';
+  //     });
+  //   }
+  // }
+
+
+
+  Future<void> _checkAndSetPointsField(String userID) async {
+  try {
+    DocumentReference docRef = FirebaseFirestore.instance.collection('points').doc(userID);
+    DocumentSnapshot doc = await docRef.get();
+
+    if (!doc.exists) {
+      // Create the document with a default points field set to 0 and include the studentID
+      await docRef.set({'points': 0, 'studentID': userID});
+      setState(() {
+        debugMessage = 'Document created for User ID: $userID with default points = 0 and studentID set.';
+      });
+    } else {
+      var data = doc.data() as Map<String, dynamic>?;
+      if (data == null || !data.containsKey('points')) {
+        // If the 'points' field doesn't exist, set it to 0 and also ensure the studentID is set
+        await docRef.set({'points': 0, 'studentID': userID}, SetOptions(merge: true));
         setState(() {
-          debugMessage = 'Document created for User ID: $userID with default points = 0';
+          debugMessage = 'Points field set to 0 for User ID: $userID and studentID set.';
         });
       } else {
-        // Check if the 'points' field exists and set it to 0 if it doesn't
-        var data = doc.data() as Map<String, dynamic>?;
-        if (data == null || !data.containsKey('points')) {
-          await docRef.set({'points': 0}, SetOptions(merge: true));
+        // If the document exists and has the points field, ensure the studentID is also set
+        if (!data.containsKey('studentID')) {
+          await docRef.set({'studentID': userID}, SetOptions(merge: true));
           setState(() {
-            debugMessage = 'Points field set to 0 for User ID: $userID';
+            debugMessage = 'StudentID set for User ID: $userID.';
           });
         } else {
           setState(() {
-            debugMessage = 'Points field already exists for User ID: $userID';
+            debugMessage = 'Points and studentID fields already exist for User ID: $userID';
           });
         }
       }
-    } catch (e) {
-      setState(() {
-        debugMessage = 'Error in _checkAndSetPointsField: $e';
-      });
     }
+  } catch (e) {
+    setState(() {
+      debugMessage = 'Error in _checkAndSetPointsField: $e';
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
