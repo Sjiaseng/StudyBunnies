@@ -6,7 +6,7 @@ import 'package:studybunnies/adminscreens/dashboard.dart';
 import 'package:studybunnies/adminscreens/giftcatalogue.dart';
 import 'package:studybunnies/adminscreens/timetable.dart';
 import 'package:studybunnies/adminscreens/users.dart';
-
+// based on selected index navigate to the options (index keep the bottom navigator active)
 void navigateToPage(int index, BuildContext context) {
   switch (index) {
     case 0:

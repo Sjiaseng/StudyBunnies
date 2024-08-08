@@ -21,7 +21,7 @@ class AdminDrawer extends StatefulWidget {
   @override
   State<AdminDrawer> createState() => _AdminDrawerState();
 }
-
+ // drawer for main and sub pages (navigate to which section using switch statements)
 class _AdminDrawerState extends State<AdminDrawer> {
   late int _currentIndex;
   final Session session = Session();

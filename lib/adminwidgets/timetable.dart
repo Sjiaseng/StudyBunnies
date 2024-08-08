@@ -3,7 +3,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:studybunnies/adminscreens/adminsubpage/edittimetable.dart';
-
+// widget for header in timetable which displays date
 Widget Timetableheader(String mydate) {
   return Container(
     margin: EdgeInsets.only(bottom: 2.h),
@@ -30,7 +30,7 @@ Widget Timetableheader(String mydate) {
     ),
   );
 }
-
+// widget for timetable content based on the parameter included
 Widget Timetablecontent(BuildContext context,String course_title, String lecturername, String venue, String timestart, String timeend, String timetableID) {
   return GestureDetector(
     onTap: () {

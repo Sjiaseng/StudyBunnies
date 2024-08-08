@@ -10,17 +10,17 @@ class TopSnackBar extends StatelessWidget {
   final double width;
   final double height;
   final double borderRadius; // Add borderRadius property
-
+  // value or setting of snackbar (show system status)
   const TopSnackBar({
     Key? key,
     required this.message,
     this.backgroundColor = Colors.black,
     this.textColor = Colors.white,
-    this.paddingHorizontal = 4.0, // Use Sizer for padding
-    this.paddingVertical = 2.0, // Use Sizer for padding
-    this.width = 80.0, // Use Sizer for width (in percentage)
-    this.height = 8.0, // Use Sizer for height (in percentage)
-    this.borderRadius = 8.0, // Default border radius
+    this.paddingHorizontal = 4.0, 
+    this.paddingVertical = 2.0, 
+    this.width = 80.0, 
+    this.height = 8.0, 
+    this.borderRadius = 8.0,
   }) : super(key: key);
 
   @override
@@ -28,22 +28,22 @@ class TopSnackBar extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: width.w, // Use Sizer for width
-        height: height.h, // Use Sizer for height
+        width: width.w, 
+        height: height.h, 
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(borderRadius.w), // Circular border
+          borderRadius: BorderRadius.circular(borderRadius.w), 
         ),
         padding: EdgeInsets.symmetric(
-          horizontal: paddingHorizontal.w, // Use Sizer for padding
-          vertical: paddingVertical.h, // Use Sizer for padding
+          horizontal: paddingHorizontal.w, 
+          vertical: paddingVertical.h, 
         ),
         child: Center(
           child: Text(
             message,
             style: TextStyle(
               color: textColor,
-              fontSize: 10.sp, // Use Sizer for font size
+              fontSize: 10.sp,
             ),
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
@@ -58,16 +58,16 @@ class TopSnackBar extends StatelessWidget {
 void showTopSnackBar(BuildContext context, String message,
     {Color backgroundColor = Colors.black,
     Color textColor = Colors.white,
-    double paddingHorizontal = 4.0, // Use Sizer for padding
-    double paddingVertical = 1.0, // Use Sizer for padding
-    double width = 80.0, // Use Sizer for width (in percentage)
-    double height = 5.0, // Use Sizer for height (in percentage)
-    double borderRadius = 2.0}) { // Add borderRadius parameter
+    double paddingHorizontal = 4.0,
+    double paddingVertical = 1.0, 
+    double width = 80.0, 
+    double height = 5.0, 
+    double borderRadius = 2.0}) { 
   final overlay = Overlay.of(context);
   final overlayEntry = OverlayEntry(
     builder: (context) => Positioned(
-      top: 2.5.h, // Use Sizer for vertical positioning
-      left: 18.w, // Center horizontally based on screen width
+      top: 2.5.h, 
+      left: 18.w, 
       child: TopSnackBar(
         message: message,
         backgroundColor: backgroundColor,
@@ -76,7 +76,7 @@ void showTopSnackBar(BuildContext context, String message,
         paddingVertical: paddingVertical,
         width: width,
         height: height,
-        borderRadius: borderRadius, // Pass borderRadius parameter
+        borderRadius: borderRadius, 
       ),
     ),
   );

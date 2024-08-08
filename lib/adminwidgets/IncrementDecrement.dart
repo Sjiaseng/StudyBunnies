@@ -15,7 +15,7 @@ class IncrementDecrementFormField extends StatefulWidget {
   @override
   _IncrementDecrementFormFieldState createState() => _IncrementDecrementFormFieldState();
 }
-
+// Increment or Decrement widget 
 class _IncrementDecrementFormFieldState extends State<IncrementDecrementFormField> {
   int _value = 0;
 
@@ -25,14 +25,14 @@ class _IncrementDecrementFormFieldState extends State<IncrementDecrementFormFiel
     _value = int.tryParse(widget.controller.text) ?? 0;
     widget.controller.text = _value.toString();
   }
-
+  // +1 to the value when pressed + button
   void _increaseValue() {
     setState(() {
       _value++;
       widget.controller.text = _value.toString();
     });
   }
-
+  // -1 to the value when pressed - button
   void _decreaseValue() {
     setState(() {
       if (_value > 0) {
@@ -41,7 +41,7 @@ class _IncrementDecrementFormFieldState extends State<IncrementDecrementFormFiel
       }
     });
   }
-
+  // show the data and ensure the value not lesser than 0 or equals to 0
   void _handleTextChanged(String value) {
     final int? newValue = int.tryParse(value);
     if (newValue != null && newValue >= 0) {

@@ -11,7 +11,7 @@ class GiftsGridView extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   _GiftsGridViewState createState() => _GiftsGridViewState();
 }
-
+// fetch and display the data for gifts generated
 class _GiftsGridViewState extends State<GiftsGridView> {
   @override
   Widget build(BuildContext context) {

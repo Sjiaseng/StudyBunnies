@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-
+// summary containers (used in dashboard to show the summary report)
 Widget SummaryContainer(String title, Color color, String value) {
     return Expanded(
       child: Container(

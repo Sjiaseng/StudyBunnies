@@ -3,7 +3,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'package:studybunnies/adminscreens/myprofile.dart';
 import 'package:studybunnies/authentication/logoutscreen.dart';
-
+// app bar widget used in main pages
 AppBar mainappbar(String title, String helpmsg, BuildContext context) {
   return AppBar(
     backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
@@ -76,7 +76,7 @@ AppBar mainappbar(String title, String helpmsg, BuildContext context) {
     ),
   );
 }
-
+// appbar used in sub pages
 AppBar subappbar(String title, BuildContext context) {
   return AppBar(
     backgroundColor: const Color.fromRGBO(100, 30, 30, 1),

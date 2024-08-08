@@ -12,7 +12,7 @@ class HistoryListView extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   _HistoryListViewState createState() => _HistoryListViewState();
 }
-
+// display the list of histories of gifts exchange made by students
 class _HistoryListViewState extends State<HistoryListView> {
   final Map<String, String> userCache = {}; // Cache for usernames
   final Map<String, String> giftNameCache = {}; // Cache for gift names
