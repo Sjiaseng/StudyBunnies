@@ -4,7 +4,7 @@ import 'package:sizer/sizer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:studybunnies/adminwidgets/top_snack_bar.dart'; // Add this import if you have a custom top_snack_bar widget
+import 'package:studybunnies/adminwidgets/top_snack_bar.dart'; 
 
 class Addclass extends StatefulWidget {
   const Addclass({super.key});
@@ -21,6 +21,7 @@ class _AddclassState extends State<Addclass> {
   final TextEditingController _descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  // Pick Image and Handle Image Path / Data
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -30,6 +31,7 @@ class _AddclassState extends State<Addclass> {
     }
   }
 
+  // Ensure Users Included Class Image & Agree with T&C of StudyBunnies
   Future<void> _uploadClass() async {
     if (!_formKey.currentState!.validate() || _pickedImagePath == null || !_isChecked) {
       if (_pickedImagePath == null) {
@@ -51,16 +53,17 @@ class _AddclassState extends State<Addclass> {
     }
 
     try {
-
+      // Fetching Data from Classes Doc
       DocumentReference docRef = FirebaseFirestore.instance.collection('classes').doc();
       String docID = docRef.id;
-
+      // Check is there a new file added
       File imageFile = File(_pickedImagePath!);
       UploadTask uploadTask = FirebaseStorage.instance.ref().child('class_images').child(docID).putFile(imageFile);
 
+      // Get Image URL in Firebase Storage
       TaskSnapshot taskSnapshot = await uploadTask;
       String imageUrl = await taskSnapshot.ref.getDownloadURL();
-
+      // Update the Class Data
       await docRef.set({
         'classID': docID, 
         'classname': _classNameController.text,
@@ -69,7 +72,7 @@ class _AddclassState extends State<Addclass> {
         'student':[],
         'lecturer':[],
       });
-
+      // Alert Message
       showTopSnackBar(
         context,
         'Class Added Successfully',
@@ -82,7 +85,7 @@ class _AddclassState extends State<Addclass> {
         _pickedImagePath = null;
         _isChecked = false;
       });
-
+      // Error Handling
     } catch (e) {
       showTopSnackBar(
         context,

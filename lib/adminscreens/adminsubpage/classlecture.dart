@@ -20,7 +20,7 @@ class _ClasslectureState extends State<Classlecture> {
     _fetchLecturers(); // Fetch lecturer data when the widget is initialized
   }
 
-  // Fetch lecturer IDs from the class document and then get their details
+  // Fetch lecturerID / userID from the class document and then get their details
   Future<void> _fetchLecturers() async {
     try {
       final classDoc = await FirebaseFirestore.instance.collection('classes').doc(widget.classID).get();

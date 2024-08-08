@@ -7,7 +7,7 @@ class Faqpage extends StatefulWidget {
   @override
   State<Faqpage> createState() => _FaqpageState();
 }
-
+// check which listtile is extended
 class _FaqpageState extends State<Faqpage> {
   final List<bool> _isOpen = [false, false, false, false, false, false, false]; 
 
@@ -80,7 +80,7 @@ class _FaqpageState extends State<Faqpage> {
       ),
     );
   }
-
+  // widget of expandable panel with takes information as parameters
 ExpansionPanel _buildExpansionPanel(int index, String headerTitle, String bodyTitle, String bodySubtitle) {
   return ExpansionPanel(
     canTapOnHeader: true,

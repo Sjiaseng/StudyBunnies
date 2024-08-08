@@ -40,7 +40,7 @@ class _EdittimetableState extends State<Edittimetable> {
     _venueController.dispose();
     super.dispose();
   }
-
+    // function to update or modify data
     Future<void> _updateTimetable() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
@@ -58,7 +58,7 @@ class _EdittimetableState extends State<Edittimetable> {
             _selectedTime!.minute,
           )),
         };
-
+        // modify timetable
         await FirebaseFirestore.instance
             .collection('timetables')
             .doc(widget.timetableID)
@@ -83,7 +83,7 @@ class _EdittimetableState extends State<Edittimetable> {
     }
   }
 
-
+  // Get timetable data from firestore based on timetableID
  Future<void> _fetchTimetableDetails() async {
     try {
       final doc = await FirebaseFirestore.instance.collection('timetables').doc(widget.timetableID).get();
@@ -103,7 +103,7 @@ class _EdittimetableState extends State<Edittimetable> {
       print("Error Fetching Data: $e");
     }
   }
-
+  // Delete timetable data using timetableID
   Future<void> _deleteTimetable() async {
     try {
       await FirebaseFirestore.instance.collection('timetables').doc(widget.timetableID).delete();
@@ -123,7 +123,7 @@ class _EdittimetableState extends State<Edittimetable> {
       );
     }
   }
-
+  // Get class data and map classID with classname
   Future<List<Map<String, dynamic>>> _fetchClasses() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot =
         await FirebaseFirestore.instance.collection('classes').get();
@@ -134,7 +134,7 @@ class _EdittimetableState extends State<Edittimetable> {
       };
     }).toList();
   }
-
+  // Get user with teacher role in database and map their userID with username
   Future<List<Map<String, dynamic>>> _fetchLecturers() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot =
         await FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'Teacher').get();
@@ -145,7 +145,7 @@ class _EdittimetableState extends State<Edittimetable> {
       };
     }).toList();
   }
-
+  // date range to display in calendar
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -160,7 +160,7 @@ class _EdittimetableState extends State<Edittimetable> {
       });
     }
   }
-
+  // Get time through calling timepicker
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,

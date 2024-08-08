@@ -47,7 +47,7 @@ String convertTimeFormat(String timeStr) {
 String calculateEndTime(String startTimeStr, String duration) {
   // Parse the start time string into a DateTime object in 'h:mm a' format
   DateTime startTime = DateFormat('h:mm a').parse(startTimeStr);
-  
+  // check duration of hours and add them together to get class end time
   Duration durationToAdd;
   if (duration == "1 Hour") {
     durationToAdd = Duration(hours: 1);
@@ -65,7 +65,7 @@ String calculateEndTime(String startTimeStr, String duration) {
   // Format the end time as 'h:mm a' (e.g., 4:01 PM)
   return DateFormat('h:mm a').format(endTime);
 }
-
+  // map and get userID and username for dropdown section
   final Map<String, String> userCache = {}; 
     Future<void> _fetchUsernames() async {
     try {
@@ -85,7 +85,7 @@ String calculateEndTime(String startTimeStr, String duration) {
   String getUsername(String userId) {
     return userCache[userId] ?? 'No Username';
   }
-
+  // map classID with class name
   Future<void> fetchClasses() async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('classes').get();
     setState(() {
@@ -99,7 +99,7 @@ String calculateEndTime(String startTimeStr, String duration) {
       selectedClassID = classname.isNotEmpty ? classname[0]['classID'] : null;
     });
   }
-
+  // get timetable data based on the selected entries (classname)
   Future<Map<String, List<Map<String, dynamic>>>> fetchTimetables(String classID, String? date) async {
     final DateFormat formatter = DateFormat('dd-MM-yyyy');
     DateTime? selectedDateTime = date != null ? formatter.parse(date) : null;
@@ -110,7 +110,7 @@ String calculateEndTime(String startTimeStr, String duration) {
         .get();
 
     Map<String, List<Map<String, dynamic>>> groupedEntries = {};
-
+    // get timetable data based on the selected entries (classtime) after selected the (classname)
     snapshot.docs.forEach((doc) {
       DateTime docDate = doc['classtime'] is Timestamp ? (doc['classtime'] as Timestamp).toDate() : doc['classtime'] as DateTime;
       String formattedDate = formatter.format(docDate);
@@ -136,7 +136,7 @@ String calculateEndTime(String startTimeStr, String duration) {
 
     return groupedEntries;
   }
-
+  // show class options in bottom sheet when initiated
   void _showClassOptionsBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -164,7 +164,7 @@ String calculateEndTime(String startTimeStr, String duration) {
       },
     );
   }
-
+  // based on classname and classtime selected get the relevant timetable details
 Future<List<String>> _fetchAvailableDates(String classID) async {
   final DateFormat formatter = DateFormat('dd-MM-yyyy');
 
@@ -185,7 +185,7 @@ Future<List<String>> _fetchAvailableDates(String classID) async {
 
   return dateSet.toList();
 }
-
+// show list of dates under the bottom sheet
 void _showDateOptionsBottomSheet() async {
   if (selectedClassID == null || selectedClassID!.isEmpty) {
     return; // Exit if no class is selected
@@ -342,14 +342,14 @@ void _showDateOptionsBottomSheet() async {
           : Future.value({}),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           Map<String, List<Map<String, dynamic>>> timetableEntriesByDate = snapshot.data ?? {};
           List<String> dates = timetableEntriesByDate.keys.toList();
           dates.sort((a, b) => DateFormat('dd-MM-yyyy').parse(a).compareTo(DateFormat('dd-MM-yyyy').parse(b)));
-
+          //sorting of date
 
           return SingleChildScrollView(
             child: Column(
@@ -378,7 +378,8 @@ void _showDateOptionsBottomSheet() async {
                             SizedBox(height: 1.h),
                             ...entries.map((entry) {
                               String startTime = DateFormat('HH:mm').format(entry['classtime']);
-                              String endTime = ""; // Placeholder endTime; you may need to calculate this based on duration or other criteria
+                              String endTime = ""; 
+                              print(endTime);
                               
                               return Timetablecontent(
                                 context,

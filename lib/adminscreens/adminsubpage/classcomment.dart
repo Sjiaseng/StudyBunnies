@@ -24,7 +24,7 @@ class _ClasscommentState extends State<Classcomment> {
     _fetchUserProfile();
     _calculateNumberOfComments();
   }
-
+  // Get username based on userID
   Future<void> _fetchUsernames() async {
     try {
       final usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
@@ -43,7 +43,7 @@ class _ClasscommentState extends State<Classcomment> {
   String getUsername(String userId) {
     return userCache[userId] ?? 'No Username';
   }
-
+  // Get user profile image based on userID
   Future<void> _fetchUserProfile() async {
     try {
       final usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
@@ -62,7 +62,7 @@ class _ClasscommentState extends State<Classcomment> {
   String getUserProfile(String userId) {
     return userCache2[userId] ?? 'images/profile.webp';
   }
-
+  // Determine How Many Comments under The Notes
   Future<void> _calculateNumberOfComments() async {
     var querySnapshot = await FirebaseFirestore.instance
         .collection('comments')
@@ -73,7 +73,7 @@ class _ClasscommentState extends State<Classcomment> {
       _expandedStates = List.generate(querySnapshot.docs.length, (_) => false);
     });
   }
-
+  // Delete Comment based on commentID
   Future<void> deleteComment(String commentID) async {
     try {
       await FirebaseFirestore.instance.collection('comments').doc(commentID).delete();
@@ -93,7 +93,7 @@ class _ClasscommentState extends State<Classcomment> {
       );
     }
   }
-
+  // Delete Reply under A comment with replyID
   Future<void> deleteReply(String replyID) async {
     try {
       await FirebaseFirestore.instance.collection('replies').doc(replyID).delete();

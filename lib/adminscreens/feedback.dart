@@ -22,7 +22,7 @@ class _FeedbacklistState extends State<Feedbacklist> {
   String? userId;
   String? userName;
   String? profileImage;
-
+  // check which toggle button is activated
   List<bool> selectedFilters = [true, false];
   TextEditingController mycontroller = TextEditingController();
   String searchQuery = '';
@@ -80,7 +80,7 @@ class _FeedbacklistState extends State<Feedbacklist> {
   String getProfileImage(String userId) {
     return profileImageCache[userId] ?? '';
   }
-
+  // check which filter / toggle button activated
   void focusButton(int index) {
     setState(() {
       for (int i = 0; i < selectedFilters.length; i++) {
@@ -165,7 +165,7 @@ class _FeedbacklistState extends State<Feedbacklist> {
             ),
             SizedBox(height: 2.h),
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
+              child: StreamBuilder<QuerySnapshot>( // get and display feedback data
                 stream: FirebaseFirestore.instance.collection('feedback').snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
@@ -191,7 +191,7 @@ class _FeedbacklistState extends State<Feedbacklist> {
                       ),
                     );
                   }
-
+                  // based on selected filter, align the data based on generated time in ascending/descending form
                   feedbacks.sort((a, b) {
                     // Example sort logic, adjust based on the selected filter
                     return selectedFilters[0]

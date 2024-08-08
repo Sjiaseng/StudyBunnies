@@ -65,17 +65,17 @@ class _EdituserState extends State<Edituser> {
       });
     }
   }
-
+  // Keep the password visible / invisible as text
   void _togglePasswordVisibility() {
     setState(() {
       _obscurePassword = !_obscurePassword;
     });
   }
-
+  // check is the profile picture included
   bool _isProfilePictureAdded() {
     return _pickedImagePath != null && _pickedImagePath!.isNotEmpty;
   }
-
+  // submit / update form data
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final usersCollection = FirebaseFirestore.instance.collection('users');
@@ -89,7 +89,7 @@ class _EdituserState extends State<Edituser> {
           if (!file.existsSync()) {
             throw Exception('File does not exist at path: ${file.path}');
           }
-
+          // update the image set the name based on their userID 
           TaskSnapshot snapshot = await FirebaseStorage.instance
               .ref('profile_images/${widget.userID}')
               .putFile(file);
@@ -101,7 +101,7 @@ class _EdituserState extends State<Edituser> {
             profileImageUrl = data['profile_img'] ?? ''; 
           }
         }
-
+        // updating records based on userID
         DocumentReference docRef = usersCollection.doc(widget.userID);
         await docRef.update({
           'username': _nameController.text,
@@ -144,7 +144,7 @@ class _EdituserState extends State<Edituser> {
     }
   }
 
-
+  // delete user function to remove user data from users doc
  Future<void> _deleteUser() async {
   try {
     // Fetch user document from Firestore

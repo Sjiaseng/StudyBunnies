@@ -35,7 +35,7 @@ class _ClassinnerState extends State<Classinner> {
     _fetchClassData();
 
   }
-
+  // Get classname based on classID
   Future<void> _fetchClassData() async {
     final classDoc = await FirebaseFirestore.instance.collection('classes').doc(widget.classID).get();
     if (classDoc.exists) {
@@ -44,13 +44,13 @@ class _ClassinnerState extends State<Classinner> {
       });
     }
   }
-
+  // Check index of toggle button
   void focusButton(int index) {
     setState(() {
       selectedIndex = index;
     });
   }
-
+  // Widget of Toggle Button for Interface Navigation in Same Page
   Widget buildToggleButton(String text, int index) {
     Color bottomBorderColor = selectedIndex == index ? Colors.black : Colors.grey;
 
@@ -78,7 +78,7 @@ class _ClassinnerState extends State<Classinner> {
       ),
     );
   }
-
+  // Show which floating action button to be displayed based on the toggle button activated
   Widget buildFloatingActionButton() {
     switch (selectedIndex) {
       case 0:

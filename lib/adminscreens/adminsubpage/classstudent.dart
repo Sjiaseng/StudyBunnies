@@ -42,7 +42,7 @@ class _ClassstudentState extends State<Classstudent> {
       setState(() {
         studentCache.clear(); // Clear previous data
         for (var doc in userDocs) {
-          studentCache[doc.id] = {
+          studentCache[doc.id] = { // get information based on userID
             'username': doc['username'] ?? 'No Username',
             'email': doc['email'] ?? 'No Email',
             'contactnumber': doc['contactnumber'] ?? 'No Contact',

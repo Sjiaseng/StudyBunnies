@@ -22,7 +22,7 @@ class _ClassnoteState extends State<Classnote> {
     _fetchUsernames(); 
     _fetchUserProfileImages();  
   }
-
+  // Get Username based on UserID
   Future<void> _fetchUsernames() async {
     try {
       final usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
@@ -40,7 +40,7 @@ class _ClassnoteState extends State<Classnote> {
       print('Error fetching usernames: $e');
     }
   }
-
+  // Get profile image based on UserID
   Future<void> _fetchUserProfileImages() async {
     try {
       final usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
@@ -69,7 +69,7 @@ class _ClassnoteState extends State<Classnote> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
+      stream: FirebaseFirestore.instance // get class notes data based on classID
           .collection('notes')
           .where('classID', isEqualTo: widget.classID)
           .snapshots(),

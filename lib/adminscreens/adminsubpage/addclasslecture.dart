@@ -46,6 +46,7 @@ class _AddclasslectureState extends State<Addclasslecture> {
     }
   }
 
+  // Adding Lecturer into Class
   Future<void> _updateLecturers() async {
     final selectedLecturers = _selectedLecturers.entries
         .where((entry) => entry.value)
@@ -53,6 +54,7 @@ class _AddclasslectureState extends State<Addclasslecture> {
         .toList();
 
     try {
+      // Update Lecturer Array into classes doc based on classID
       await FirebaseFirestore.instance
           .collection('classes')
           .doc(widget.classID)

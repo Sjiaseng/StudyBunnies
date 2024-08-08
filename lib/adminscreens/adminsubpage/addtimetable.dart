@@ -38,7 +38,7 @@ class _AddtimetableState extends State<Addtimetable> {
     _venueController.dispose();
     super.dispose();
   }
-
+  // Map classID with classname
   Future<List<Map<String, dynamic>>> _fetchClasses() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot =
         await FirebaseFirestore.instance.collection('classes').get();
@@ -49,7 +49,7 @@ class _AddtimetableState extends State<Addtimetable> {
       };
     }).toList();
   }
-
+  // Map UserID (Teacher Role) with their username 
   Future<List<Map<String, dynamic>>> _fetchLecturers() async {
     final QuerySnapshot<Map<String, dynamic>> snapshot =
         await FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'Teacher').get();
@@ -60,7 +60,7 @@ class _AddtimetableState extends State<Addtimetable> {
       };
     }).toList();
   }
-
+  // Range of Date to Display
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -75,7 +75,7 @@ class _AddtimetableState extends State<Addtimetable> {
       });
     }
   }
-
+  // Show Time Picker
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -87,7 +87,7 @@ class _AddtimetableState extends State<Addtimetable> {
       });
     }
   }
-
+  // Save / Add new timetable data
   Future<void> _saveTimetable() async {
     if (_formKey.currentState?.validate() ?? false) {
       final classID = _selectedClass;
@@ -120,6 +120,19 @@ class _AddtimetableState extends State<Addtimetable> {
           backgroundColor: Colors.green,
           textColor: Colors.white,
         );
+        // Reset the form and clear controllers
+        _formKey.currentState?.reset();
+        _courseNameController.clear();
+        _venueController.clear();
+
+        // Reset dropdowns and other fields
+        setState(() {
+          _selectedClass = null;
+          _selectedLecturer = null;
+          _selectedDate = null;
+          _selectedTime = null;
+          _selectedDuration = null;
+        });
       } catch (e) {
         showTopSnackBar(
           context,

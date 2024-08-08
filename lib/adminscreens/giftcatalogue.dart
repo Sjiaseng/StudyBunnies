@@ -31,7 +31,7 @@ class _GiftlistState extends State<Giftlist> {
     super.initState();
     _fetchUserData();
   }
-
+  // get user data [username and profile image]
   Future<void> _fetchUserData() async {
     userId = await session.getUserId();
     if (userId != null) {
@@ -133,7 +133,7 @@ class _GiftlistState extends State<Giftlist> {
       ),
     );
   }
-
+  // in page navigation button
   Widget buildToggleButton(String text, int index) {
     Color bottomBorderColor =
         selectedIndex == index ? Colors.black : Colors.grey;

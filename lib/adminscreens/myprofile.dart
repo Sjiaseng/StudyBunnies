@@ -37,7 +37,7 @@ class _MyProfileState extends State<MyProfile> {
     super.initState();
     _fetchUserData(); // Fetch user data on init
   }
-
+  // fetch user data based on session (userID)
   Future<void> _fetchUserData() async {
     try {
       // Get the user ID from the session
@@ -69,7 +69,7 @@ class _MyProfileState extends State<MyProfile> {
       print('Error fetching user data: $e');
     }
   }
-
+  // handle image data
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -78,17 +78,17 @@ class _MyProfileState extends State<MyProfile> {
       });
     }
   }
-
+  // determine the visibility of password
   void _togglePasswordVisibility() {
     setState(() {
       _obscurePassword = !_obscurePassword;
     });
   }
-
+  // check is profilepicture attached
   bool _isProfilePictureAdded() {
     return _pickedImagePath != null && _pickedImagePath!.isNotEmpty;
   }
-
+  // update personal information function
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final usersCollection = FirebaseFirestore.instance.collection('users');
@@ -114,7 +114,7 @@ class _MyProfileState extends State<MyProfile> {
             profileImageUrl = data['profile_img'] ?? ''; 
           }
         }
-
+        // update based on userID and inputted response.
         DocumentReference docRef = usersCollection.doc(userId!);
         await docRef.update({
           'username': _nameController.text,

@@ -27,7 +27,7 @@ class _SubfeedbackState extends State<Subfeedback> {
     super.initState();
     _fetchFeedbackData();
   }
-
+  // get feedback data based on feedbackID
 Future<void> _fetchFeedbackData() async {
   try {
     final feedbackDoc = await FirebaseFirestore.instance.collection('feedback').doc(widget.feedbackId).get();
@@ -53,7 +53,7 @@ Future<void> _fetchFeedbackData() async {
     print('Error fetching feedback data: $e');
   }
 }
-    
+    // delete feedback based on the feedbackID
   Future<void> _deleteFeedback() async {
     try {
       await FirebaseFirestore.instance.collection('feedback').doc(widget.feedbackId).delete();
@@ -74,7 +74,7 @@ Future<void> _fetchFeedbackData() async {
       );
     }
   }
-
+  // get user data though userID
   Future<void> _fetchUserData(String userId) async {
     try {
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();

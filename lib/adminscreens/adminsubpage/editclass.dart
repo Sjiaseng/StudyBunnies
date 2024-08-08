@@ -29,7 +29,7 @@ class _EditclassState extends State<Editclass> {
     super.initState();
     _fetchClassData();
   }
-
+  // Handle input Image
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -38,7 +38,7 @@ class _EditclassState extends State<Editclass> {
       });
     }
   }
-
+  // Get class Data and Display Them in respective textfield or etc...
   Future<void> _fetchClassData() async {
     try {
       final classDoc = await FirebaseFirestore.instance.collection('classes').doc(widget.classID).get();
@@ -55,7 +55,7 @@ class _EditclassState extends State<Editclass> {
       print('Error fetching class data: $e');
     }
   }
-
+  // update class information
 Future<void> _updateClass() async {
   if (_formKey.currentState!.validate()) {
     final classCollection = FirebaseFirestore.instance.collection('classes');
@@ -120,7 +120,7 @@ Future<void> _updateClass() async {
   }
 }
 
-
+  // Delete class based on classID
   Future<void> _deleteClass() async {
     try {
       final classDoc = await FirebaseFirestore.instance.collection('classes').doc(widget.classID).get();
@@ -139,6 +139,7 @@ Future<void> _updateClass() async {
         }
 
         try {
+          // Lines of code for deletion
           await FirebaseFirestore.instance.collection('classes').doc(widget.classID).delete();
           print('Document deleted successfully');
         } catch (e) {

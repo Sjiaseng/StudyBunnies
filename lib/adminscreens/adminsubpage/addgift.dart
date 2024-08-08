@@ -23,6 +23,7 @@ class _AddgiftState extends State<Addgift> {
   final TextEditingController _stockAmountController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  // Handle Image Picking Process
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -31,7 +32,7 @@ class _AddgiftState extends State<Addgift> {
       });
     }
   }
-
+  // Ensure users to upload gift picture
   Future<void> _uploadGift() async {
     if (!_formKey.currentState!.validate() || _pickedImagePath == null) {
       if (_pickedImagePath == null) {
@@ -56,7 +57,7 @@ class _AddgiftState extends State<Addgift> {
 
       TaskSnapshot taskSnapshot = await uploadTask;
       String imageUrl = await taskSnapshot.ref.getDownloadURL();
-
+      // Insert Data Based on Response
       await docRef.set({
         'giftID': docID, // Use the auto-generated document ID as the giftID
         'giftName': _giftNameController.text,

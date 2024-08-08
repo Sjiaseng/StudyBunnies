@@ -39,7 +39,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     _calculatetotalteachers();
     _fetchUsernames();
   }
-
+  // getting user data based on session ID stored
   Future<void> _fetchUserData() async {
     try {
       // Get the user ID from the session
@@ -66,7 +66,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     }
   }
   final Map<String, String> userCache = {};
-
+  // get username based on userID
   Future<void> _fetchUsernames() async {
     try {
       final usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
@@ -91,7 +91,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   int? totalTeacher;
   int? totalStudent;
   int? totalClass; 
-
+  // calculate total number of admin in users doc
   Future<void> _calculatetotaladmin() async {
     try {
       final userCollection = FirebaseFirestore.instance.collection('users');
@@ -104,7 +104,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       print('Error calculating total admins: $e');
     }
   }
-
+  // calculate total number of teacher in users doc
   Future<void> _calculatetotalteachers() async {
     try {
       final userCollection = FirebaseFirestore.instance.collection('users');
@@ -117,7 +117,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       print('Error calculating total teachers: $e');
     }
   }
-
+ // calculate total number of student in users doc
   Future<void> _calculatetotalstudents() async {
     try {
       final userCollection = FirebaseFirestore.instance.collection('users');
@@ -130,7 +130,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       print('Error calculating total students: $e');
     }
   }
-
+  // calculate total number of class in classes doc
   Future<void> _calculatetotalclasses() async {
     try {
       final classesCollection = FirebaseFirestore.instance.collection('classes');

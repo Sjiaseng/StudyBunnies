@@ -24,7 +24,7 @@ class _AdduserState extends State<Adduser> {
   final _formKey = GlobalKey<FormState>();
 
   bool _obscurePassword = true;
-
+  // Handle Image Data
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -33,17 +33,17 @@ class _AdduserState extends State<Adduser> {
       });
     }
   }
-
+  // Show password in text / in asterisk form
   void _togglePasswordVisibility() {
     setState(() {
       _obscurePassword = !_obscurePassword;
     });
   }
-  
+  // Check profile picture uploaded by User
   bool _isProfilePictureAdded() {
     return _pickedImagePath != null && _pickedImagePath!.isNotEmpty;
   }
-
+  // Add user data into database
   void _submitForm() async {
     if (_formKey.currentState!.validate() && _isProfilePictureAdded()) {
       final usersCollection = FirebaseFirestore.instance.collection('users');

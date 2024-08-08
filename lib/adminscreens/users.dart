@@ -29,7 +29,7 @@ class _UserlistState extends State<Userlist> {
     super.initState();
     _fetchUserData();
   }
-
+  // get user data based on userID
   Future<void> _fetchUserData() async {
     userId = await session.getUserId();
     if (userId != null) {
@@ -42,11 +42,11 @@ class _UserlistState extends State<Userlist> {
       }
     }
   }
-  
+  // save toggle button selected / activated
   List<bool> selectedFilters = [true, false, false, false];
   String searchQuery = '';
   String roleFilter = 'All';
-
+  // check which toggle button or filter to be applied
   void focusButton(int index) {
     setState(() {
       for (int buttonIndex = 0; buttonIndex < selectedFilters.length; buttonIndex++) {
@@ -184,14 +184,14 @@ class _UserlistState extends State<Userlist> {
                 ),
               ),
               SizedBox(height: 2.h),
-              Expanded(
+              Expanded( //get all user
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance.collection('users').snapshots(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return const Center(child: CircularProgressIndicator());
                     }
-
+                    // check user role
                     var users = snapshot.data!.docs.where((user) {
                       if (roleFilter != 'All' && user['role'] != roleFilter) {
                         return false;
@@ -201,9 +201,9 @@ class _UserlistState extends State<Userlist> {
                       }
                       return true;
                     }).toList();
-
+                    // sort user data in alphabetical order
                     users.sort((a, b) => a['username'].compareTo(b['username']));
-
+                    // handling method if theres no record found
                     if (users.isEmpty) {
                       return Center(
                         child: Column(

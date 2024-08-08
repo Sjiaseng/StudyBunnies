@@ -27,7 +27,7 @@ class _ClasslistState extends State<Classlist> {
     super.initState();
     _getClassStudentCounts();
   }
-
+  // check which toggle button is activated 
   List<bool> selectedFilters = [true, false, false];
   TextEditingController mycontroller = TextEditingController();
   String searchQuery = '';
@@ -41,7 +41,7 @@ class _ClasslistState extends State<Classlist> {
   }
 
   String? classID;
-
+  // calculate numbers of students in class
   Future<void> _getClassStudentCounts() async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('classes').get();
 

@@ -42,7 +42,7 @@ class _EditgiftState extends State<Editgift> {
     _stockAmountController.dispose();
     super.dispose();
   }
-
+  // handle image data
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -51,7 +51,7 @@ class _EditgiftState extends State<Editgift> {
       });
     }
   }
-
+  // get gift data based on giftID from database
   Future<void> _fetchGiftData() async {
     try {
       final giftDoc = await FirebaseFirestore.instance.collection('gifts').doc(widget.giftID).get();
@@ -70,7 +70,7 @@ class _EditgiftState extends State<Editgift> {
       print('Error fetching gift data: $e');
     }
   }
-
+  // update information based on giftID
   Future<void> _updateGift() async {
     if (_formKey.currentState!.validate()) {
       final giftsCollection = FirebaseFirestore.instance.collection('gifts');
@@ -134,7 +134,7 @@ class _EditgiftState extends State<Editgift> {
       );
     }
   }
-
+  // delete gifts uploaded in the database based on giftID
   Future<void> _deleteGift() async {
     try {
       final giftDoc = await FirebaseFirestore.instance.collection('gifts').doc(widget.giftID).get();
