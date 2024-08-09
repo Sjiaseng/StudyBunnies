@@ -3,13 +3,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:studybunnies/studentscreens/notes.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:studybunnies/studentwidgets/appbar.dart';
+import 'package:studybunnies/studentwidgets/drawer.dart';
+import 'package:studybunnies/authentication/session.dart';
 import 'package:studybunnies/studentscreens/classes.dart';
 import 'package:studybunnies/studentwidgets/bottomnav.dart';
-import 'package:studybunnies/studentwidgets/drawer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../authentication/session.dart';
+import 'package:studybunnies/studentscreens/viewallnotes.dart';
 
 class StudentDashboard extends StatefulWidget {
   const StudentDashboard({super.key});
