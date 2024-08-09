@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:audioplayers/audioplayers.dart';
 
-class QuizReview extends StatefulWidget {
+class QuizDetailsPage extends StatefulWidget {
   final String userID;
   final String classID;
   final String quizID;
 
-  const QuizReview({
+  const QuizDetailsPage({
     Key? key,
     required this.userID,
     required this.classID,
@@ -14,264 +15,332 @@ class QuizReview extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _QuizReviewState createState() => _QuizReviewState();
+  _QuizDetailsPageState createState() => _QuizDetailsPageState();
 }
 
-class _QuizReviewState extends State<QuizReview> {
-  bool _hasAttempted = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkAttempt();
-  }
-
-  Future<void> _checkAttempt() async {
-    final attemptSnapshot = await FirebaseFirestore.instance
-        .collection('studentQuizAnswer')
-        .where('studentID', isEqualTo: widget.userID)
-        .where('quizID', isEqualTo: widget.quizID)
-        .limit(1)
-        .get();
-
-    if (attemptSnapshot.docs.isNotEmpty) {
-      setState(() {
-        _hasAttempted = true;
-      });
-    } else {
-      setState(() {
-        _hasAttempted = false;
-      });
-    }
-  }
+class _QuizDetailsPageState extends State<QuizDetailsPage> {
+  final Map<String, int?> _selectedOptionIndices =
+      {}; // Updated to store indices
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // final String studentQuizAnsID = '8heJ8re7mDUVBNJ0FaBw'; // Document name
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quiz Review'),
+        title: const Text('Quiz Details'),
         backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
         foregroundColor: Colors.white,
+        actions: const [
+          // IconButton(
+          //   icon: Icon(Icons.volume_up), // Audio icon
+          //   onPressed: _onAudioIconPressed,
+          // ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Display Class Name, Score, and Quiz Title
-            FutureBuilder<DocumentSnapshot>(
-              future: FirebaseFirestore.instance
-                  .collection('classes')
-                  .doc(widget.classID)
-                  .get(),
-              builder: (context, classSnapshot) {
-                if (!classSnapshot.hasData) {
-                  return Text(
-                    'Loading class information...',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  );
-                }
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.all(16.0),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                _buildClassNameAndQuizTitle(),
+                const SizedBox(height: 16.0),
+              ]),
+            ),
+          ),
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('quizquestion')
+                .where('quizID', isEqualTo: widget.quizID)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
 
-                final classData = classSnapshot.data?.data() as Map<String, dynamic>?;
-                final className = classData?['classname'] ?? 'Unknown class';
+              final questions = snapshot.data!.docs;
 
-                return FutureBuilder<DocumentSnapshot>(
-                  future: FirebaseFirestore.instance
-                      .collection('quiz')
-                      .doc(widget.quizID)
-                      .get(),
-                  builder: (context, quizSnapshot) {
-                    if (!quizSnapshot.hasData) {
-                      return Text(
-                        'Loading quiz information...',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      );
-                    }
+              if (questions.isEmpty) {
+                return const SliverFillRemaining(
+                  child: Center(child: Text('No questions found.')),
+                );
+              }
 
-                    final quizData = quizSnapshot.data?.data() as Map<String, dynamic>?;
-                    final quizTitle = quizData?['quizTitle'] ?? 'Unknown quiz';
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final questionData =
+                        questions[index].data() as Map<String, dynamic>;
+                    final questionID =
+                        questions[index].id; // Get the questionID
+                    final question = questionData['question'];
+                    final choices = List<String>.from(questionData['choices']);
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    return Card(
+                      color: const Color.fromRGBO(211, 211, 211, 1),
+                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Text(
-                                className,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 30,
-                                      fontFamily: 'Georgia',
-                                    ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                            const SizedBox(height: 8.0),
+                            Text(
+                              question,
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                        fontFamily: 'Times New Roman',
+                                        fontSize: 17,
+                                      )
                             ),
-                            FutureBuilder<QuerySnapshot>(
-                              future: FirebaseFirestore.instance
-                                  .collection('studentQuizAnswer')
-                                  .where('studentID', isEqualTo: widget.userID)
-                                  .where('quizID', isEqualTo: widget.quizID)
-                                  .limit(1)
-                                  .get(),
-                              builder: (context, scoreSnapshot) {
-                                if (scoreSnapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Text('Loading score...');
-                                }
-                                if (scoreSnapshot.hasError) {
-                                  return const Text('Error loading score');
-                                }
-                                if (scoreSnapshot.hasData &&
-                                    scoreSnapshot.data!.docs.isNotEmpty) {
-                                  final scoreData = scoreSnapshot.data!.docs.first
-                                      .data() as Map<String, dynamic>?;
-                                  final score = scoreData?['score'] ?? 0;
-
-                                  return Text(
-                                    'Score: $score',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 23,
-                                          fontFamily: 'Georgia',
-                                        ),
-                                  );
-                                }
-                                return const SizedBox.shrink(); // No message displayed if no attempt is made
-                              },
+                            const SizedBox(height: 8.0),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: List.generate(choices.length, (i) {
+                                final choice = choices[i];
+                                final isSelected =
+                                    _selectedOptionIndices[questionID] == i;
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: ElevatedButton(
+                                    onPressed: () =>
+                                        _onOptionTap(questionID, choice, i),
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16.0),
+                                      foregroundColor: Colors.black,
+                                      backgroundColor: isSelected
+                                          ? const Color.fromRGBO( 255, 221, 60, 1)
+                                          : const Color.fromRGBO( 255, 255, 183, 1), 
+                                    ),
+                                    child: Text(choice,
+                                    style: const TextStyle(
+                                      fontFamily: 'Times New Roman',
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                    ),),
+                                  ),
+                                );
+                              }),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          quizTitle,
-                          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                      ),
+                    );
+                  },
+                  childCount: questions.length,
+                ),
+              );
+            },
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+              child: ElevatedButton(
+                onPressed: _onSubmit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                ),
+                child: const Text('Submit',
+                style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Times New Roman',
+                                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildClassNameAndQuizTitle() {
+    return FutureBuilder<DocumentSnapshot>(
+      future: FirebaseFirestore.instance
+          .collection('classes')
+          .doc(widget.classID)
+          .get(),
+      builder: (context, classSnapshot) {
+        if (!classSnapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final className = classSnapshot.data!.get('classname') as String;
+
+        return FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance
+              .collection('quiz')
+              .doc(widget.quizID)
+              .get(),
+          builder: (context, quizSnapshot) {
+            if (!quizSnapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final quizTitle = quizSnapshot.data!.get('quizTitle') as String;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  className,
+                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30,
+                                fontFamily: 'Georgia',
+                              ),
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  quizTitle,
+                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 23,
                                 fontFamily: 'Georgia',
                               ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
-            const SizedBox(height: 16.0),
-
-            // Display Quiz Questions
-            Expanded(
-              child: _hasAttempted
-                  ? StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('quizquestion')
-                          .where('quizID', isEqualTo: widget.quizID)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        final questions = snapshot.data?.docs ?? [];
-                        if (questions.isEmpty) {
-                          return const Center(
-                            child: Text('No questions found for this quiz.'),
-                          );
-                        }
-                        return ListView.builder(
-                          itemCount: questions.length,
-                          itemBuilder: (context, index) {
-                            final questionData = questions[index].data() as Map<String, dynamic>;
-                            final questionText = questionData['question'] ?? 'No question text';
-                            final choices = List<String>.from(questionData['choices'] ?? []);
-                            final correctOption = questionData['correctOption'];
-
-                            return Card(
-                              color: const Color.fromRGBO(211, 211, 211, 1),
-                              margin: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Question ${index + 1}:',
-                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                        fontFamily: 'Times New Roman',
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      )
-                                    ),
-                                    const SizedBox(height: 8.0),
-                                    Text(
-                                      questionText,
-                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                        fontFamily: 'Times New Roman',
-                                        fontSize: 17,
-                                      )
-                                    ),
-                                    const SizedBox(height: 8.0),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: List<Widget>.generate(choices.length, (i) {
-                                        final choice = choices[i];
-                                        final isCorrect = i == correctOption;
-
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                          child: ElevatedButton(
-                                            onPressed: () {},
-                                            style: ElevatedButton.styleFrom(
-                                              padding: const EdgeInsets.symmetric(vertical: 16.0),
-                                              backgroundColor:
-                                                  isCorrect ? const Color.fromRGBO(225, 247, 213, 1) : const Color.fromRGBO(225, 189, 189, 1),
-                                            ),
-                                            child: Text(
-                                              choice,
-                                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                              fontFamily: 'Times New Roman',
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    )
-                  : const Center(
-                      child: Text(
-                        'No attempt has been made. \nPlease make an attempt before checking the answers.',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Times New Roman',
-                          fontSize: 20,
-                          color: Colors.red,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-            ),
-          ],
-        ),
-      ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
+  }
+
+  // void _onAudioIconPressed() async {
+  //   final player = AudioPlayer();
+  //   const assetPath =
+  //       'assets/audio/once-in-paris-168895.mp3'; // Path to the audio file in assets
+
+  //   try {
+  //     // Play the audio file from assets
+  //     await player.play(AssetSource(assetPath));
+
+  //     print('Audio is playing');
+  //   } catch (e) {
+  //     print('Error playing audio: $e');
+  //   }
+  // }
+
+  bool _areAllQuestionsAnswered(List<String> questionIDs) {
+    return questionIDs
+        .every((questionID) => _selectedOptionIndices.containsKey(questionID));
+  }
+
+  void _onOptionTap(String questionID, String selectedOption, int index) {
+  setState(() {
+    _selectedOptionIndices[questionID] = index; // Store the index locally
+  });
+}
+
+// function to update the details to the studentQuizAnswer collection after click on submit
+void _onSubmit() async {
+  // Map the selected options to a format suitable for submission
+  final studentAnswers = _selectedOptionIndices.entries.map((entry) {
+    return {'questionID': entry.key, 'chooseOption': entry.value};
+  }).toList();
+
+  try {
+    // Calculate the score based on the selected options
+    final score = await _calculateScore();
+
+    // Check if there's an existing record for the given quizID and studentID
+    final existingRecordsQuery = await _firestore
+        .collection('studentQuizAnswer')
+        .where('quizID', isEqualTo: widget.quizID)
+        .where('studentID', isEqualTo: widget.userID)
+        .get();
+
+    if (existingRecordsQuery.docs.isNotEmpty) {
+      // If record exists, delete old records
+      for (var doc in existingRecordsQuery.docs) {
+        await _firestore.collection('studentQuizAnswer').doc(doc.id).delete();
+      }
+    }
+
+    // Generate a unique ID for the new document
+    final studentQuizAnsID = _firestore.collection('studentQuizAnswer').doc().id;
+
+    // Create a new document in 'studentQuizAnswer' collection with the specified ID
+    await _firestore.collection('studentQuizAnswer').doc(studentQuizAnsID).set({
+      'studentQuizAnsID': studentQuizAnsID, // Save the document ID
+      'quizID': widget.quizID,
+      'score': score, // Use the calculated score
+      'studentAnswer': studentAnswers,
+      'studentID': widget.userID,
+      'submission': 'submitted',
+      'submissionDate': FieldValue.serverTimestamp(),
+    });
+
+    // Update student's points
+    await _updateStudentPoints(score);
+
+    print('Quiz answers submitted successfully.');
+    Navigator.pop(context); // Optionally navigate back or show a success message
+  } catch (error) {
+    print('Failed to submit quiz answers: $error');
+  }
+}
+
+
+// function to calculate score obtained by the student
+  Future<int> _calculateScore() async {
+    int score = 0;
+
+    for (var entry in _selectedOptionIndices.entries) {
+      final questionID = entry.key;
+      final selectedOptionIndex = entry.value;
+
+      try {
+        final questionSnapshot = await FirebaseFirestore.instance
+            .collection('quizquestion')
+            .doc(questionID)
+            .get();
+
+        if (questionSnapshot.exists) {
+          final questionData = questionSnapshot.data() as Map<String, dynamic>;
+          final correctOptionIndex = questionData[
+              'correctOption']; // Ensure this field matches Firestore
+
+          if (selectedOptionIndex == correctOptionIndex) {
+            score += 1;
+          }
+        }
+      } catch (e) {
+        print('Error fetching question: $e');
+      }
+    }
+
+    return score;
+  }
+
+  Future<void> _updateStudentPoints(int score) async {
+    try {
+      final studentPointsDoc =
+          await _firestore.collection('points').doc(widget.userID).get();
+
+      if (studentPointsDoc.exists) {
+        final currentPoints = studentPointsDoc.data()!['points'] as int? ?? 0;
+        final updatedPoints = currentPoints + score;
+
+        await _firestore.collection('points').doc(widget.userID).update({
+          'points': updatedPoints,
+        });
+
+        print('Student points updated successfully.');
+      } else {
+        print('Student document not found in points collection.');
+      }
+    } catch (error) {
+      print('Failed to update student points: $error');
+    }
   }
 }
