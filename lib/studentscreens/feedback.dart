@@ -1,7 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:studybunnies/studentscreens/dashboard.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 
 class Feedbacklist extends StatefulWidget {
   const Feedbacklist({super.key});
@@ -36,8 +37,7 @@ class _FeedbacklistState extends State<Feedbacklist> {
             .get();
         if (userDoc.exists) {
           setState(() {
-            _userRole = userDoc
-                .data()?['role']; // Assuming the role field is named 'role'
+            _userRole = userDoc.data()?['role']; 
           });
         }
       }
@@ -81,6 +81,7 @@ class _FeedbacklistState extends State<Feedbacklist> {
     }
   }
 
+// Validation Before Submit Feedback
   void _validateAndSubmitFeedback() {
     if (_selectedReason == null) {
       ScaffoldMessenger.of(context).showSnackBar(
