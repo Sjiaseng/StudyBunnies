@@ -201,7 +201,7 @@ class _ProgressState extends State<Progress> {
                                 ),
                                 const SizedBox(height: 5.0),
                                 SizedBox(
-                                  height: 135,
+                                  height: 115,
                                   child: charts.PieChart(data, animate: true),
                                 ),
                                 Text(
