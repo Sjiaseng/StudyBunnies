@@ -8,7 +8,7 @@ import 'package:studybunnies/studentscreens/timetable.dart';
 import 'package:studybunnies/studentwidgets/appbar.dart';
 import 'package:studybunnies/studentwidgets/bottomnav.dart';
 import 'package:studybunnies/studentwidgets/drawer.dart';
-
+// hi
 class Classdetails extends StatefulWidget {
   final String className;
   final String classID;
