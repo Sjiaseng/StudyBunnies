@@ -51,7 +51,8 @@ dependencies:
   increment_decrement_form_field: ^1.0.0
   dropdown_search: ^5.0.6
   cloud_functions: ^5.0.4
-  
+  charts_flutter: ^0.12.0
+  audioplayers: ^6.0.0
 
 
 dev_dependencies:
