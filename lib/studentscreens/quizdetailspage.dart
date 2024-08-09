@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:audioplayers/audioplayers.dart';
+//import 'package:audioplayers/audioplayers.dart';
 
 class QuizDetailsPage extends StatefulWidget {
   final String userID;
@@ -31,11 +31,11 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
         title: const Text('Quiz Details'),
         backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
         foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.volume_up), // Audio icon
-            onPressed: _onAudioIconPressed,
-          ),
+        actions: const [
+          // IconButton(
+          //   icon: Icon(Icons.volume_up), // Audio icon
+          //   onPressed: _onAudioIconPressed,
+          // ),
         ],
       ),
       body: CustomScrollView(
@@ -56,7 +56,7 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return SliverFillRemaining(
+                return const SliverFillRemaining(
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
@@ -64,7 +64,7 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
               final questions = snapshot.data!.docs;
 
               if (questions.isEmpty) {
-                return SliverFillRemaining(
+                return const SliverFillRemaining(
                   child: Center(child: Text('No questions found.')),
                 );
               }
@@ -76,25 +76,24 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
                         questions[index].data() as Map<String, dynamic>;
                     final questionID =
                         questions[index].id; // Get the questionID
-                    final questionNumber = questionData['questionNumber'];
                     final question = questionData['question'];
                     final choices = List<String>.from(questionData['choices']);
 
                     return Card(
+                      color: const Color.fromRGBO(211, 211, 211, 1),
                       margin: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Question $questionNumber:',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
                             const SizedBox(height: 8.0),
                             Text(
                               question,
-                              style: Theme.of(context).textTheme.bodyLarge,
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                        fontFamily: 'Times New Roman',
+                                        fontSize: 17,
+                                      )
                             ),
                             const SizedBox(height: 8.0),
                             Column(
@@ -114,12 +113,15 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
                                           vertical: 16.0),
                                       foregroundColor: Colors.black,
                                       backgroundColor: isSelected
-                                          ? const Color.fromRGBO(
-                                              195, 154, 29, 1)
-                                          : Colors.yellow[
-                                              100], // Highlight selected option
+                                          ? const Color.fromRGBO( 255, 221, 60, 1)
+                                          : const Color.fromRGBO( 255, 255, 183, 1), 
                                     ),
-                                    child: Text(choice),
+                                    child: Text(choice,
+                                    style: const TextStyle(
+                                      fontFamily: 'Times New Roman',
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                    ),),
                                   ),
                                 );
                               }),
@@ -141,11 +143,17 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
               child: ElevatedButton(
                 onPressed: _onSubmit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromRGBO(100, 30, 30, 1),
+                  backgroundColor: const Color.fromRGBO(100, 30, 30, 1),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
-                child: const Text('Submit'),
+                child: const Text('Submit',
+                style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Times New Roman',
+                                  ),
+                ),
               ),
             ),
           ),
@@ -185,17 +193,19 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
                 Text(
                   className,
                   style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                      ),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30,
+                                fontFamily: 'Georgia',
+                              ),
                 ),
                 const SizedBox(height: 8.0),
                 Text(
                   quizTitle,
                   style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
-                      ),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 23,
+                                fontFamily: 'Georgia',
+                              ),
                 ),
               ],
             );
@@ -205,43 +215,25 @@ class _QuizDetailsPageState extends State<QuizDetailsPage> {
     );
   }
 
-  void _onAudioIconPressed() async {
-    final player = AudioPlayer();
-    const assetPath =
-        'assets/audio/once-in-paris-168895.mp3'; // Path to the audio file in assets
+  // void _onAudioIconPressed() async {
+  //   final player = AudioPlayer();
+  //   const assetPath =
+  //       'assets/audio/once-in-paris-168895.mp3'; // Path to the audio file in assets
 
-    try {
-      // Play the audio file from assets
-      await player.play(AssetSource(assetPath));
+  //   try {
+  //     // Play the audio file from assets
+  //     await player.play(AssetSource(assetPath));
 
-      print('Audio is playing');
-    } catch (e) {
-      print('Error playing audio: $e');
-    }
-  }
+  //     print('Audio is playing');
+  //   } catch (e) {
+  //     print('Error playing audio: $e');
+  //   }
+  // }
 
   bool _areAllQuestionsAnswered(List<String> questionIDs) {
     return questionIDs
         .every((questionID) => _selectedOptionIndices.containsKey(questionID));
   }
-
-  // void _onOptionTap(String questionID, String selectedOption, int index) {
-  //   setState(() {
-  //     _selectedOptionIndices[questionID] = index; // Store the index
-  //   });
-
-  //   // Fetch the index of the selected option and store it
-  //   FirebaseFirestore.instance.collection('userResponses').add({
-  //     'userID': widget.userID,
-  //     'questionID': questionID,
-  //     'chooseOption': index, // Store the selected option index
-  //     'timestamp': FieldValue.serverTimestamp(),
-  //   }).then((value) {
-  //     print('Selected option index stored successfully.');
-  //   }).catchError((error) {
-  //     print('Failed to store selected option index: $error');
-  //   });
-  // }
 
   void _onOptionTap(String questionID, String selectedOption, int index) {
   setState(() {
@@ -260,7 +252,21 @@ void _onSubmit() async {
     // Calculate the score based on the selected options
     final score = await _calculateScore();
 
-    // Generate a unique ID for the document
+    // Check if there's an existing record for the given quizID and studentID
+    final existingRecordsQuery = await _firestore
+        .collection('studentQuizAnswer')
+        .where('quizID', isEqualTo: widget.quizID)
+        .where('studentID', isEqualTo: widget.userID)
+        .get();
+
+    if (existingRecordsQuery.docs.isNotEmpty) {
+      // If record exists, delete old records
+      for (var doc in existingRecordsQuery.docs) {
+        await _firestore.collection('studentQuizAnswer').doc(doc.id).delete();
+      }
+    }
+
+    // Generate a unique ID for the new document
     final studentQuizAnsID = _firestore.collection('studentQuizAnswer').doc().id;
 
     // Create a new document in 'studentQuizAnswer' collection with the specified ID
@@ -283,6 +289,7 @@ void _onSubmit() async {
     print('Failed to submit quiz answers: $error');
   }
 }
+
 
 // function to calculate score obtained by the student
   Future<int> _calculateScore() async {
