@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-import 'package:studybunnies/studentscreens/dashboard.dart';
+import 'package:flutter/material.dart';
 import 'package:studybunnies/studentwidgets/drawer.dart';
+import 'package:studybunnies/studentscreens/dashboard.dart';
+
 
 class Faqpage extends StatefulWidget {
   const Faqpage({super.key});
