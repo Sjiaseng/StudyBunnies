@@ -30,12 +30,16 @@ class ExchangeGift extends StatelessWidget {
               }
 
               // Get references to the Firestore collections
-              final giftHistoryRef = FirebaseFirestore.instance.collection('giftshistory');
-              final giftRef = FirebaseFirestore.instance.collection('gifts').doc(giftID);
-              final pointsRef = FirebaseFirestore.instance.collection('points').doc(userID);
+              final giftHistoryRef =
+                  FirebaseFirestore.instance.collection('giftshistory');
+              final giftRef =
+                  FirebaseFirestore.instance.collection('gifts').doc(giftID);
+              final pointsRef =
+                  FirebaseFirestore.instance.collection('points').doc(userID);
 
               // Use a transaction to ensure atomicity
-              await FirebaseFirestore.instance.runTransaction((transaction) async {
+              await FirebaseFirestore.instance
+                  .runTransaction((transaction) async {
                 // Read all necessary data
                 final giftDoc = await transaction.get(giftRef);
                 if (!giftDoc.exists) {
@@ -48,12 +52,14 @@ class ExchangeGift extends StatelessWidget {
                 }
 
                 // Extract data needed for calculations
-                final newStockAmount = (giftDoc.data()!['stock_amount'] as int) - 1;
+                final newStockAmount =
+                    (giftDoc.data()!['stock_amount'] as int) - 1;
                 if (newStockAmount < 0) {
                   throw Exception('Not enough stock');
                 }
 
-                final pointsRequired = (giftDoc.data()!['points_required'] as int);
+                final pointsRequired =
+                    (giftDoc.data()!['points_required'] as int);
                 final currentPoints = (pointsDoc.data()!['points'] as int);
                 if (currentPoints < pointsRequired) {
                   throw Exception('Not enough points');
@@ -70,7 +76,8 @@ class ExchangeGift extends StatelessWidget {
                 });
 
                 // Add a new document to the 'giftshistory' collection
-                final historyDocRef = giftHistoryRef.doc(); // Get a new document reference
+                final historyDocRef =
+                    giftHistoryRef.doc(); // Get a new document reference
                 transaction.set(historyDocRef, {
                   'historyID': historyDocRef.id, // Set historyID as the document ID
                   'userID': userID,
