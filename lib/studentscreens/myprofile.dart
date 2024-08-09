@@ -1,10 +1,10 @@
 import 'dart:io';
+import 'package:sizer/sizer.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:studybunnies/authentication/session.dart';
 import 'package:studybunnies/studentmodels/countries.dart';
 import 'package:studybunnies/studentwidgets/top_snack_bar.dart';
@@ -262,10 +262,15 @@ class _MyProfileState extends State<MyProfile> {
                   children: [
                   TextFormField(
                     controller: _nameController,
+                    cursorColor: Colors.grey,
                     enabled: true,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: 'Name',
+                        labelText: 'Name',
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey), 
+                        ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -283,10 +288,15 @@ class _MyProfileState extends State<MyProfile> {
                     SizedBox(height: 2.h),
                     TextFormField(
                       controller: _contactNumberController,
+                      cursorColor: Colors.grey,
                       enabled: true,
                       decoration: const InputDecoration(
                         border: UnderlineInputBorder(),
                         labelText: 'Contact Number',
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.grey), 
+                        ),
                       ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -412,10 +422,7 @@ class _MyProfileState extends State<MyProfile> {
                         return null;
                       },
                     ),
-
-
                     SizedBox(height: 4.h),
-
                  SizedBox(height: 5.h),
                   ElevatedButton(
                     onPressed: () {
