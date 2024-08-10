@@ -6,7 +6,7 @@ Handling `bodyText2` Error in Flutter Chart Library
 
 When working with the Flutter chart library `charts_flutter` version 0.12.0, there is a possibility of encountering the following error:
 ../../../AppData/Local/Pub/Cache/hosted/pub.dev/charts_flutter-0.12.0/lib/src/behaviors/legend/legend_entry_layout.dart:134:45: Error: The getter 'bodyText2' isn't defined for the class 'TextTheme'.
-- 'TextTheme' is from 'package:flutter/src/material/text_theme.dart' ('/C:/src/flutter/packages/flutter/lib/src/material/text_theme.dart').
+'TextTheme' is from 'package:flutter/src/material/text_theme.dart' ('/C:/src/flutter/packages/flutter/lib/src/material/text_theme.dart').
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'bodyText2'.
 color ??= Theme.of(context).textTheme.bodyText2!.color;
 
